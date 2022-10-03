@@ -1,0 +1,52 @@
+[
+    {
+        "name": "string",
+        "specs": [
+            {
+                "name": "string",
+                "value": "string"
+            }
+        ],
+        "descriptionHtml": "string",
+        "availableOptions": [
+            {
+                "name": "string",
+                "value": "string",
+                "thumbnailImageUrl": "string"
+            }
+        ],
+        "skus": [
+            {
+                "manufacturerPartNo": "string",
+                "options": [
+                    {
+                        "name": "string",
+                        "value": "string"
+                    }
+                ],
+                "media": [
+                    {
+                        "mediaType": "image",
+                        "mediaUrl": "string",
+                        "thumbnailImageUrl": "string"
+                    }
+                ],
+                "inStockQty": 0,
+                "shippingMethods": [
+                    {
+                        "id": "string",
+                        "description": "string",
+                        "freightAmount": 0
+                    }
+                ],
+                "relatedProducts": [
+                    {
+                        "manufacturerPartNo": "string",
+                        "name": "string",
+                        "thumbnailImageUrl": "string"
+                    }
+                ]
+            }
+        ]
+    }
+]
