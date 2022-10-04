@@ -45,11 +45,8 @@ class LoginController extends Controller
             'password' => 'required|string',
         ]);
         $credentials = $request->only('email', 'password');
-
-        $token = Auth::attempt($credentials);
-        // $token = JWTAuth::attempt($credentials);
-        // $token = auth('api')->attempt($credentials);
-        if (!$token) {
+        $attempt = Auth::attempt($credentials);
+        if (!$attempt) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Unauthorized',
@@ -57,15 +54,13 @@ class LoginController extends Controller
         }
 
         $user = Auth::user();
+        $token = auth()->user()->createToken('API Token')->accessToken;
         return response()->json([
             'status' => 'success',
             'message' => 'User logged in successfully',
             'data' => [
                 'user' => $user,
-                // 'authorisation' => [
-                //     'token' => $token,
-                //     'type' => 'customer',
-                // ]
+                'token' => $token,
             ]
         ]);
     }
@@ -129,10 +124,7 @@ class LoginController extends Controller
             'status' => 'success',
             'user' => Auth::user(),
             'data' => [
-                'authorisation' => [
-                    'token' => Auth::refresh(),
-                    'type' => 'bearer',
-                ]
+                'token' => Auth::refresh(),
             ]
         ]);
     }

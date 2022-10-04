@@ -12,10 +12,9 @@
         "guzzlehttp/psr7": "2.1.1",
         "intervention/image": "^2.7",
         "laravel/framework": "^8.75",
+        "laravel/passport": "^10.4",
         "laravel/sanctum": "^2.11",
-        "laravel/tinker": "^2.5",
-        "php-open-source-saver/jwt-auth": "^2.0",
-        "tymon/jwt-auth": "^1.0"
+        "laravel/tinker": "^2.5"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

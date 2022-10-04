@@ -40,7 +40,6 @@ class RegisterController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
         $request->validate([
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
@@ -48,7 +47,6 @@ class RegisterController extends Controller
             'email' => 'required|string|email|max:191|unique:users',
             'password' => 'required|string|min:6',
         ]);
-
         $user = User::create([
             'account_id' => $request->account_id,
             'first_name' => trim($request->first_name),
@@ -62,17 +60,13 @@ class RegisterController extends Controller
         ]);
 
         $signup_state = $user->save();
-        $token = Auth::login($user);
-
+        $token = $user->createToken('API Token')->accessToken;
         return response()->json([
             'status' => 'success',
             'message' => 'User created successfully',
             'data' => [
                 'user' => $user,
-                // 'authorisation' => [
-                //     'token' => $token,
-                //     'type' => 'customer',
-                // ]
+                'token' => $token,
             ]
         ]);
     }
