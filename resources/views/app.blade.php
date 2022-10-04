@@ -47,7 +47,7 @@
     <!-- <body class="horizontal-layout horizontal-menu 2-columns bg-white" data-open="hover" data-menu="horizontal-menu" data-col="2-columns"> -->
     <body>
 
-        <h3 class="text-center mt-5">XG API For Mopar</h3>
+        <h3 class="text-center mt-5">Syndcate SMS API</h3>
 
     </body>
 </html>
