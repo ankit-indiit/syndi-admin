@@ -178,6 +178,7 @@ return [
 
         Aws\Laravel\AwsServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
+        Tymon\JWTAuth\Providers\LaravelServiceProvider::class
 
     ],
 
@@ -236,6 +237,9 @@ return [
 
         'AWS' => Aws\Laravel\AwsFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
+
+        'JWTAuth' => Tymon\JWTAuth\Facades\JWTAuth::class,
+        'JWTFactory' => Tymon\JWTAuth\Facades\JWTFactory::class,
 
     ],
 

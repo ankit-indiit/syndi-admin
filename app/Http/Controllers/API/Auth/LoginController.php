@@ -47,6 +47,7 @@ class LoginController extends Controller
         $credentials = $request->only('email', 'password');
 
         $token = Auth::attempt($credentials);
+        // $token = JWTAuth::attempt($credentials);
         // $token = auth('api')->attempt($credentials);
         if (!$token) {
             return response()->json([
@@ -58,12 +59,13 @@ class LoginController extends Controller
         $user = Auth::user();
         return response()->json([
             'status' => 'success',
-            'user' => $user,
+            'message' => 'User logged in successfully',
             'data' => [
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'customer',
-                ]
+                'user' => $user,
+                // 'authorisation' => [
+                //     'token' => $token,
+                //     'type' => 'customer',
+                // ]
             ]
         ]);
     }

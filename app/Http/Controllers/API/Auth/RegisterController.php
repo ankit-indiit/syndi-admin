@@ -69,10 +69,10 @@ class RegisterController extends Controller
             'message' => 'User created successfully',
             'data' => [
                 'user' => $user,
-                'authorisation' => [
-                    'token' => $token,
-                    'type' => 'customer',
-                ]
+                // 'authorisation' => [
+                //     'token' => $token,
+                //     'type' => 'customer',
+                // ]
             ]
         ]);
     }
