@@ -26,6 +26,7 @@ Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'st
 // Auth
 Route::get('/msg', [App\Http\Controllers\API\MessageController::class, 'index']);
 Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'store']);
+Route::get('/webhook', [App\Http\Controllers\API\MessageController::class, 'store']);
 
 
 
