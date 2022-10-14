@@ -1,0 +1,50 @@
+{
+    "data": {
+        "event_type": "message.finalized",
+        "id": "06bfe2c6-8cb7-460d-81b7-472f9bace55d",
+        "occurred_at": "2022-10-14T19:43:33.617+00:00",
+        "payload": {
+            "cc": [],
+            "completed_at": "2022-10-14T19:43:33.617+00:00",
+            "cost": {
+                "amount": "0.0040",
+                "currency": "USD"
+            },
+            "direction": "outbound",
+            "encoding": "GSM-7",
+            "errors": [],
+            "from": {
+                "carrier": "Telnyx",
+                "line_type": "Wireless",
+                "phone_number": "+12017789154"
+            },
+            "id": "403183d8-05e3-44aa-8380-dd58ca24f2d2",
+            "media": [],
+            "messaging_profile_id": "400183cb-3f07-4b96-a93a-7a88ee855210",
+            "organization_id": "fa4dc6ab-7e53-4bbc-b6e4-058e6c52133d",
+            "parts": 1,
+            "received_at": "2022-10-14T19:43:28.118+00:00",
+            "record_type": "message",
+            "sent_at": "2022-10-14T19:43:31.892+00:00",
+            "tags": [],
+            "text": "Webhook test from Telnyx to real phone",
+            "to": [
+                {
+                    "carrier": "BANDWIDTH.COM CLEC, LLC - ND",
+                    "line_type": "Wireline",
+                    "phone_number": "+12183211745",
+                    "status": "delivered"
+                }
+            ],
+            "type": "SMS",
+            "valid_until": "2022-10-14T20:43:28.118+00:00",
+            "webhook_failover_url": null,
+            "webhook_url": "http:\/\/3.137.108.96\/webhook"
+        },
+        "record_type": "event"
+    },
+    "meta": {
+        "attempt": 1,
+        "delivered_to": "http:\/\/3.137.108.96\/webhook"
+    }
+}

@@ -64,11 +64,11 @@ class RegisterController extends Controller
         // dd($av_list);
 
         // Create Telnyx phone number
-        // $new_user_phone = NumberOrder::Create(["phone_numbers" => [["phone_number" => "+13017860317"]]]);
+        // $new_user_phone = NumberOrder::Create(["phone_numbers" => [["phone_number" => "+14052672456"]]]);
         // dd($new_user_phone);
 
         // Current Phone Number
-        $current_phone = PhoneNumber::All(['filter[phone_number]' => '+13017860317']);
+        $current_phone = PhoneNumber::All(['filter[phone_number]' => '+14052672456']);
         $current_phone_id = $current_phone->data[0]->id;
         // dd($current_phone, $current_phone_id);
 
@@ -89,24 +89,23 @@ class RegisterController extends Controller
         
 
         // Create Message profile
-        // $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
-        //                                               "name" => "Profile for +13017860317",
-        //                                               "number_pool_settings" => [ "geomatch" => false, 
-        //                                                                           "long_code_weight" => 1,
-        //                                                                           "skip_unhealthy" => true,
-        //                                                                           "sticky_sender" => false,
-        //                                                                           "toll_free_weight" => 10
-        //                                                                         ],
-        //                                               "url_shortener_settings" => [ "domain" => "",
-        //                                                                             "prefix" => "",
-        //                                                                             "replace_blacklist_only" => true,
-        //                                                                             "send_webhooks" => false
-        //                                                                         ],
-        //                                               "webhook_api_version" => "2",
-        //                                               "webhook_failover_url" => "",
-        //                                             //   "webhook_url" => "http://telnyxwebhooks.com:8084/7f750dee-01fd-49e1-8325-2622d70e0051"
-        //                                               "webhook_url" => ""
-        //                                             ]);
+        $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
+                                                      "name" => "Profile for +14052672456",
+                                                      "number_pool_settings" => [ "geomatch" => false, 
+                                                                                  "long_code_weight" => 1,
+                                                                                  "skip_unhealthy" => true,
+                                                                                  "sticky_sender" => false,
+                                                                                  "toll_free_weight" => 10
+                                                                                ],
+                                                      "url_shortener_settings" => [ "domain" => "",
+                                                                                    "prefix" => "",
+                                                                                    "replace_blacklist_only" => true,
+                                                                                    "send_webhooks" => false
+                                                                                ],
+                                                      "webhook_api_version" => "2",
+                                                      "webhook_failover_url" => "",
+                                                      "webhook_url" => "http://3.137.108.96/webhook"
+                                                    ]);
         // dd($new_message_profile);
     
 // http://telnyxwebhooks.com:8084/7f750dee-01fd-49e1-8325-2622d70e0051
@@ -156,7 +155,7 @@ class RegisterController extends Controller
         $url = 'https://api.telnyx.com/v2/phone_numbers/'.$current_phone_id.'/messaging';
         $ch = curl_init($url);
         $data = '{
-            "messaging_profile_id":"'.$message_profile->id.'"
+            "messaging_profile_id":"'.$new_message_profile->id.'"
         }';
 
         $headers = [

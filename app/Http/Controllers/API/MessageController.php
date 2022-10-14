@@ -32,8 +32,8 @@ class MessageController extends Controller
 
         $msg = Message::Create([
             // "from" => "+13017860317", // Your Telnyx number
-            "from" => "+13017860317", // Your Telnyx number 16313801925
-            "to" =>   "+12678719081",
+            "from" => "+12017789154", // Your Telnyx number //+12017789154 //13017860317
+            "to" =>   "+12183211745",
             "text" => "Webhook test from Telnyx to real phone"
         ]);
 
@@ -60,14 +60,16 @@ class MessageController extends Controller
     {
         // dd(json_encode($request->all()));
 
+        $last_msg = Msg::orderBy('created_at', 'desc')->first();
+
+        // dd($last_msg->created_at->timestamp);
+
         $msg = Msg::create([
             'sender_phone' => '+12678719081',
             'receiver_phone' => '+13017860317',
             'message' => json_encode($request->all()),
             // 'date' => timestamps(),
         ]);
-
-        // $state = $msg->save();
 
         dd($state, $request->all());
     }
