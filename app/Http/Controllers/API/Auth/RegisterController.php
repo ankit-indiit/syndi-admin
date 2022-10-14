@@ -117,13 +117,13 @@ class RegisterController extends Controller
 
 
         // Create Message profile
-        $update_message_profile_ = MessagingProfile::Update('400183cb-3f07-4b96-a93a-7a88ee855210',
-                                    [   
-                                        "webhook_api_version" => "2",
-                                        "webhook_failover_url" => "",
-                                        "webhook_url" => "http://3.137.108.96/webhook"
-                                    ]);
-        dd($update_message_profile_);
+        // $update_message_profile_ = MessagingProfile::Update('400183cb-3f07-4b96-a93a-7a88ee855210',
+        //                             [   
+        //                                 "webhook_api_version" => "2",
+        //                                 "webhook_failover_url" => "",
+        //                                 "webhook_url" => "http://3.137.108.96/webhook"
+        //                             ]);
+        // dd($update_message_profile_);
 
 
         // Assign Your Phone Number to Your Messaging Profile

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\User;
+use App\Models\Msg;
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
 use Telnyx\NumberOrder;
@@ -33,7 +34,7 @@ class MessageController extends Controller
             // "from" => "+13017860317", // Your Telnyx number
             "from" => "+13017860317", // Your Telnyx number 16313801925
             "to" =>   "+12678719081",
-            "text" => "Hello, Msg Test 1"
+            "text" => "Webhook test from Telnyx to real phone"
         ]);
 
         dd($msg);
@@ -57,21 +58,19 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $user = User::create([
-            'account_id' => '',
-            'first_name' => 'test',
-            'last_name' => 'test',
-            'email' => 'test@email.com',
-            'company' => 'company name',
-            'phone' => '+2678719081',
-            'timezone' => '',
-            'password' => Hash::make('admin123'),
-            'dpassword' => 'admin123'
+        // dd(json_encode($request->all()));
+
+        $msg = Msg::create([
+            'sender_phone' => '+12678719081',
+            'receiver_phone' => '+13017860317',
+            'message' => json_encode($request->all()),
+            'room_id' => '1',
+            // 'date' => timestamps(),
         ]);
 
-        $signup_state = $user->save();
+        $state = $msg->save();
 
-        dd($signup_state, $request->all());
+        dd($state, $request->all());
     }
 
     /**
