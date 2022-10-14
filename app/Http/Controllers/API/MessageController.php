@@ -67,7 +67,7 @@ class MessageController extends Controller
             // 'date' => timestamps(),
         ]);
 
-        $state = $msg->save();
+        // $state = $msg->save();
 
         dd($state, $request->all());
     }
