@@ -64,7 +64,6 @@ class MessageController extends Controller
             'sender_phone' => '+12678719081',
             'receiver_phone' => '+13017860317',
             'message' => json_encode($request->all()),
-            'room_id' => '1',
             // 'date' => timestamps(),
         ]);
 
