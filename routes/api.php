@@ -23,6 +23,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/signup', [App\Http\Controllers\API\Auth\RegisterController::class, 'store']);
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
 
+// Auth
+Route::get('/msg', [App\Http\Controllers\API\MessageController::class, 'index']);
+Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'store']);
+
+
+
 // Products
 Route::get('/Products', [App\Http\Controllers\API\ProductsController::class, 'products']);
 Route::get('/Products/{manufacturerPartNo}', [App\Http\Controllers\API\ProductsController::class, 'productsByManufacturerPartNo']);
