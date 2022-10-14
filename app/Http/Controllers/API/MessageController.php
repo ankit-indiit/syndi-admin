@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
+use App\Models\User;
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
 use Telnyx\NumberOrder;
