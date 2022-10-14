@@ -15,10 +15,11 @@ class CreateMsgsTable extends Migration
     {
         Schema::create('msgs', function (Blueprint $table) {
             $table->id();
-            $table->string('room_id')->nullable();
             $table->string('sender_phone')->nullable();
+            $table->string('sender_name')->nullable();
             $table->string('receiver_phone')->nullable();
-            $table->string('message')->nullable();
+            $table->string('receiver_name')->nullable();
+            $table->text('message')->nullable();
             $table->date('date')->nullable();
             $table->timestamps();
         });
