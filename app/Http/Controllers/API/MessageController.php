@@ -130,13 +130,16 @@ class MessageController extends Controller
         $receiver_query = User::where('phone', $receiver_phone)->first();
         $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
 
-        $saved_query = Msg::where('sender_phone', $sender_phone)
+        $saved_query1 = Msg::where('payload_id', $payload_id)
+                            ->first();
+
+        $saved_query2 = Msg::where('sender_phone', $sender_phone)
                             ->where('receiver_phone', $receiver_phone)
                             ->where('message', $text)
                             ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)))
                             ->first();
 
-        if (is_null($saved_query)) {
+        if (is_null($saved_query1) && is_null($saved_query2)) {
             $msg = Msg::create([
                 'payload_id' => $payload_id,
                 'sender_phone' => $sender_phone,
