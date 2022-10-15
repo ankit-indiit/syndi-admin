@@ -16,7 +16,7 @@ use Telnyx\NumberOrder;
 use Telnyx\PhoneNumber;
 use Telnyx\MessagingProfile;
 use Telnyx\Message;
-
+use DateTime;
 
 class MessageController extends Controller
 {
@@ -115,8 +115,9 @@ class MessageController extends Controller
     {
         // dd(json_encode($request->all()));
         
+        $msg_id = $request->data['id'];
+        $occurred_at = $request->data['occurred_at'];
         $payload = $request->data['payload'];
-        $sent_at = $request->data['payload']['sent_at'];
         $text = $request->data['payload']['text'];
         $sender_phone = $request->data['payload']['from']['phone_number'];
         $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
@@ -127,18 +128,28 @@ class MessageController extends Controller
         $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
 
 
-        $last_msg = Msg::orderBy('created_at', 'desc')->first();
+        $saved_query = Msg::where('msg_id', $msg_id)
+                            ->where('sender_phone', $sender_phone)
+                            ->where('receiver_phone', $receiver_phone)
+                            ->where('message', $text)
+                            ->first();
 
-        $msg = Msg::create([
-            'sender_phone' => $sender_phone,
-            'sender_name' => $sender_name,
-            'receiver_phone' => $receiver_phone,
-            'receiver_name' => $receiver_name,
-            // 'message' => json_encode($request->all()),
-            'message' => $text,
-            'sent_at' => date('Y-m-d H:i:s', strtotime($sent_at)),
-        ]);
+        if (is_null($saved_query)) {
+            $msg = Msg::create([
+                'sender_phone' => $sender_phone,
+                'sender_name' => $sender_name,
+                'receiver_phone' => $receiver_phone,
+                'receiver_name' => $receiver_name,
+                // 'message' => json_encode($request->all()),
+                'message' => $text,
+                'occurred_at' => date('Y-m-d H:i:s', strtotime($occurred_at)),
+            ]);
+            $data = $msg;
+            
+        } else {
+            $data = $saved_query;
+        }
 
-        return response()->json($msg);
+        return response()->json($data);
     }
 }
