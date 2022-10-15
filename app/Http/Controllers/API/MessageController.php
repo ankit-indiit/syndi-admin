@@ -136,6 +136,7 @@ class MessageController extends Controller
 
         if (is_null($saved_query)) {
             $msg = Msg::create([
+                'msg_id' => $msg_id,
                 'sender_phone' => $sender_phone,
                 'sender_name' => $sender_name,
                 'receiver_phone' => $receiver_phone,
