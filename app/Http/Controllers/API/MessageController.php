@@ -133,7 +133,7 @@ class MessageController extends Controller
         $saved_query = Msg::where('sender_phone', $sender_phone)
                             ->where('receiver_phone', $receiver_phone)
                             ->where('message', $text)
-                            ->where('occurred_at', date('Y-m-d H:i:s', strtotime($occurred_at)))
+                            ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)))
                             ->first();
 
         if (is_null($saved_query)) {
