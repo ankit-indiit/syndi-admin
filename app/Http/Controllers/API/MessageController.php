@@ -27,16 +27,7 @@ class MessageController extends Controller
      */
     public function index()
     {
-        // Set Key
-        Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
-
-        $msg = Message::Create([
-            // "from" => "+13017860317", // Your Telnyx number
-            "from" => "+12017789154", // Your Telnyx number //+12017789154 //13017860317
-            "to" =>   "+13017860317",
-            "text" => "Telnyx to Telnyx msg test"
-        ]);
-
+        //
     }
 
     /**
@@ -61,9 +52,9 @@ class MessageController extends Controller
         Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
 
         $msg = Message::Create([
-            "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317
-            "to" =>   $receiver_phone,
-            "text" => $message
+            "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317
+            "to" =>   $request->receiver_phone,
+            "text" => $request->message
         ]);
 
         return response()->json($msg);
