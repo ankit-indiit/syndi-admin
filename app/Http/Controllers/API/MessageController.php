@@ -114,6 +114,9 @@ class MessageController extends Controller
     public function webhook(Request $request)
     {
         // dd(json_encode($request->all()));
+        // $saved_query = Msg::where('occurred_at', date('Y-m-d H:i:s', strtotime('2022-10-15 14:01:01')))
+        //                 ->first();
+        // dd($saved_query);
         
         $occurred_at = $request->data['occurred_at'];
         $payload = $request->data['payload'];
@@ -127,11 +130,10 @@ class MessageController extends Controller
         $receiver_query = User::where('phone', $receiver_phone)->first();
         $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
 
-
-        $saved_query = Msg::where('payload_id', $payload_id)
-                            ->where('sender_phone', $sender_phone)
+        $saved_query = Msg::where('sender_phone', $sender_phone)
                             ->where('receiver_phone', $receiver_phone)
                             ->where('message', $text)
+                            ->where('occurred_at', date('Y-m-d H:i:s', strtotime($occurred_at)))
                             ->first();
 
         if (is_null($saved_query)) {
