@@ -15,7 +15,7 @@ class CreateMsgsTable extends Migration
     {
         Schema::create('msgs', function (Blueprint $table) {
             $table->id();
-            $table->string('msg_id')->nullable();
+            $table->string('payload_id')->nullable();
             $table->string('sender_phone')->nullable();
             $table->string('sender_name')->nullable();
             $table->string('receiver_phone')->nullable();
