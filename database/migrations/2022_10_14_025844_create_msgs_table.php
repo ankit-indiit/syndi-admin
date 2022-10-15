@@ -20,7 +20,7 @@ class CreateMsgsTable extends Migration
             $table->string('receiver_phone')->nullable();
             $table->string('receiver_name')->nullable();
             $table->text('message')->nullable();
-            $table->date('date')->nullable();
+            $table->dateTime('sent_at')->nullable();
             $table->timestamps();
         });
     }

@@ -89,23 +89,23 @@ class RegisterController extends Controller
         
 
         // Create Message profile
-        $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
-                                                      "name" => "Profile for +14052672456",
-                                                      "number_pool_settings" => [ "geomatch" => false, 
-                                                                                  "long_code_weight" => 1,
-                                                                                  "skip_unhealthy" => true,
-                                                                                  "sticky_sender" => false,
-                                                                                  "toll_free_weight" => 10
-                                                                                ],
-                                                      "url_shortener_settings" => [ "domain" => "",
-                                                                                    "prefix" => "",
-                                                                                    "replace_blacklist_only" => true,
-                                                                                    "send_webhooks" => false
-                                                                                ],
-                                                      "webhook_api_version" => "2",
-                                                      "webhook_failover_url" => "",
-                                                      "webhook_url" => "http://3.137.108.96/webhook"
-                                                    ]);
+        // $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
+        //                                               "name" => "Profile for +14052672456",
+        //                                               "number_pool_settings" => [ "geomatch" => false, 
+        //                                                                           "long_code_weight" => 1,
+        //                                                                           "skip_unhealthy" => true,
+        //                                                                           "sticky_sender" => false,
+        //                                                                           "toll_free_weight" => 10
+        //                                                                         ],
+        //                                               "url_shortener_settings" => [ "domain" => "",
+        //                                                                             "prefix" => "",
+        //                                                                             "replace_blacklist_only" => true,
+        //                                                                             "send_webhooks" => false
+        //                                                                         ],
+        //                                               "webhook_api_version" => "2",
+        //                                               "webhook_failover_url" => "",
+        //                                               "webhook_url" => "http://3.137.108.96/webhook"
+        //                                             ]);
         // dd($new_message_profile);
     
 // http://telnyxwebhooks.com:8084/7f750dee-01fd-49e1-8325-2622d70e0051
@@ -152,27 +152,27 @@ class RegisterController extends Controller
 
 
 
-        $url = 'https://api.telnyx.com/v2/phone_numbers/'.$current_phone_id.'/messaging';
-        $ch = curl_init($url);
-        $data = '{
-            "messaging_profile_id":"'.$new_message_profile->id.'"
-        }';
+//         $url = 'https://api.telnyx.com/v2/phone_numbers/'.$current_phone_id.'/messaging';
+//         $ch = curl_init($url);
+//         $data = '{
+//             "messaging_profile_id":"'.$new_message_profile->id.'"
+//         }';
 
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Authorization: Bearer KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu',
-        ];
+//         $headers = [
+//             'Content-Type: application/json',
+//             'Accept: application/json',
+//             'Authorization: Bearer KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu',
+//         ];
 
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        curl_close($ch);
+//         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+//         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+//         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+//         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+//         $result = curl_exec($ch);
+//         curl_close($ch);
 
-dd(json_decode($result));
+// dd(json_decode($result));
 
 
         $request->validate([
