@@ -21,6 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Auth
 Route::post('/signup', [App\Http\Controllers\API\Auth\RegisterController::class, 'store']);
+Route::post('/numbers', [App\Http\Controllers\API\Auth\RegisterController::class, 'index']);
+
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
 
 // Auth

@@ -22,11 +22,28 @@ class RegisterController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // Set Key
+        Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
+
+        // Availble Phone Number List
+        $av_list = AvailablePhoneNumber::All(['filter[country_code]' => $request->country, 
+                                            // 'filter[features]' => 'sms',
+                                            // 'filter[phone_number_type]' => 'local',
+                                            // 'filter[locality]' => 'local',
+                                            // 'filter[administrative_area]' => 'CA',
+                                            'filter[national_destination_code]' => $request->area_code,
+                                            // "filter[phone_number][starts_with]" => "209",
+                                            // 'filter[limit]' => 10
+                                            ]
+                                        );
+
+        return response()->json($av_list);
+        
     }
 
     /**
