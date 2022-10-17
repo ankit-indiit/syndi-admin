@@ -43,7 +43,6 @@ class RegisterController extends Controller
                                         );
 
         return response()->json($av_list);
-        
     }
 
     /**
@@ -67,27 +66,14 @@ class RegisterController extends Controller
         // Set Key
         Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
 
-        // Availble Phone Number List
-        $av_list = AvailablePhoneNumber::All(['filter[country_code]' => 'US', 
-                                            // 'filter[features]' => 'sms',
-                                            'filter[phone_number_type]' => 'local',
-                                            // 'filter[locality]' => 'local',
-                                            // 'filter[administrative_area]' => 'CA',
-                                            'filter[national_destination_code]' => '301',
-                                            // "filter[phone_number][starts_with]" => "209",
-                                            'filter[limit]' => 10]
-                                        );
-
-        // dd($av_list);
-
+        // $user_phone = '+15056369512';
+        $user_phone = $request->phone;
         // Create Telnyx phone number
-        // $new_user_phone = NumberOrder::Create(["phone_numbers" => [["phone_number" => "+14052672456"]]]);
-        // dd($new_user_phone);
+        $new_user_phone = NumberOrder::Create(["phone_numbers" => [["phone_number" => $user_phone]]]);
 
         // Current Phone Number
-        $current_phone = PhoneNumber::All(['filter[phone_number]' => '+14052672456']);
+        $current_phone = PhoneNumber::All(['filter[phone_number]' => $user_phone]);
         $current_phone_id = $current_phone->data[0]->id;
-        // dd($current_phone, $current_phone_id);
 
         // Retrive Phone
         // $retrive_phone = PhoneNumber::Retrieve($current_phone_id);
@@ -106,55 +92,44 @@ class RegisterController extends Controller
         
 
         // Create Message profile
-        // $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
-        //                                               "name" => "Profile for +14052672456",
-        //                                               "number_pool_settings" => [ "geomatch" => false, 
-        //                                                                           "long_code_weight" => 1,
-        //                                                                           "skip_unhealthy" => true,
-        //                                                                           "sticky_sender" => false,
-        //                                                                           "toll_free_weight" => 10
-        //                                                                         ],
-        //                                               "url_shortener_settings" => [ "domain" => "",
-        //                                                                             "prefix" => "",
-        //                                                                             "replace_blacklist_only" => true,
-        //                                                                             "send_webhooks" => false
-        //                                                                         ],
-        //                                               "webhook_api_version" => "2",
-        //                                               "webhook_failover_url" => "",
-        //                                               "webhook_url" => "http://3.137.108.96/webhook"
-        //                                             ]);
-        // dd($new_message_profile);
-    
-// http://telnyxwebhooks.com:8084/7f750dee-01fd-49e1-8325-2622d70e0051
-// https://webhook.site/3bd28ed8-6442-42a6-85b3-26084fe88efb
-
-// 400183cd-527d-4a22-bcb6-64df180021ed
-// 400183cb-3f07-4b96-a93a-7a88ee855210
+        $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
+                                                      "name" => "Profile for ".$user_phone,
+                                                      "number_pool_settings" => [ "geomatch" => false, 
+                                                                                  "long_code_weight" => 1,
+                                                                                  "skip_unhealthy" => true,
+                                                                                  "sticky_sender" => false,
+                                                                                  "toll_free_weight" => 10
+                                                                                ],
+                                                      "url_shortener_settings" => [ "domain" => "",
+                                                                                    "prefix" => "",
+                                                                                    "replace_blacklist_only" => true,
+                                                                                    "send_webhooks" => false
+                                                                                ],
+                                                      "webhook_api_version" => "2",
+                                                      "webhook_failover_url" => "",
+                                                      "webhook_url" => "http://3.137.108.96/webhook"
+                                                    ]);
+        $msg_profile_id = $new_message_profile->id;
 
 
-        // Create Message profile
+        // Update Message profile
         // $update_message_profile_ = MessagingProfile::Update('400183cb-3f07-4b96-a93a-7a88ee855210',
         //                             [   
         //                                 "webhook_api_version" => "2",
         //                                 "webhook_failover_url" => "",
         //                                 "webhook_url" => "http://3.137.108.96/webhook"
         //                             ]);
-        // dd($update_message_profile_);
 
 
         // Assign Your Phone Number to Your Messaging Profile
         // $assign = PhoneNumber::Update($current_phone_id, ["messaging_product" => "P2P", "messaging_profile_id" => $msg_profile_id]);
-        // dd($assign);
-
-
 
         // $url = 'https://api.telnyx.com/v2/messaging_hosted_number_orders';
         // $ch = curl_init($url);
         // $data = '{
-        //     "messaging_profile_id":"400183cb-3f07-4b96-a93a-7a88ee855210",
-        //     "phone_numbers":["+12017789154"]
+        //     "messaging_profile_id":"'.$msg_profile_id.'",
+        //     "phone_numbers":["'.$user_phone.'"]
         // }';
-        // //+13017860317
         // $headers = [
         //     'Content-Type: application/json',
         //     'Accept: application/json',
@@ -168,41 +143,35 @@ class RegisterController extends Controller
         // curl_close($ch);
 
 
-
-//         $url = 'https://api.telnyx.com/v2/phone_numbers/'.$current_phone_id.'/messaging';
-//         $ch = curl_init($url);
-//         $data = '{
-//             "messaging_profile_id":"'.$new_message_profile->id.'"
-//         }';
-
-//         $headers = [
-//             'Content-Type: application/json',
-//             'Accept: application/json',
-//             'Authorization: Bearer KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu',
-//         ];
-
-//         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
-//         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-//         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-//         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-//         $result = curl_exec($ch);
-//         curl_close($ch);
-
-// dd(json_decode($result));
-
+        // Update profile ID in phone number
+        $url = 'https://api.telnyx.com/v2/phone_numbers/'.$current_phone_id.'/messaging';
+        $ch = curl_init($url);
+        $data = '{
+            "messaging_profile_id":"'.$msg_profile_id.'"
+        }';
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'Authorization: Bearer KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu',
+        ];
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        // dd(json_decode($result));
 
         $request->validate([
-            'first_name' => 'required|string|max:50',
-            'last_name' => 'required|string|max:50',
+            'full_name' => 'required|string|max:50',
             'phone' => 'required|string|max:20',
             'email' => 'required|string|email|max:191|unique:users',
             'password' => 'required|string|min:6',
         ]);
         $user = User::create([
             'account_id' => $request->account_id,
-            'first_name' => trim($request->first_name),
-            'last_name' => trim($request->last_name),
+            'full_name' => trim($request->full_name),
             'email' => trim($request->email),
             'company' => trim($request->company),
             'phone' => $request->phone,
