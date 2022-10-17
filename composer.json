@@ -8,7 +8,7 @@
         "php": "^7.3|^8.0",
         "agiledrop/laravel-telnyx": "^1.0",
         "aws/aws-sdk-php-laravel": "~3.0",
-        "fruitcake/laravel-cors": "^2.0",
+        "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.4.4",
         "guzzlehttp/psr7": "2.1.1",
         "intervention/image": "^2.7",
