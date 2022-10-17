@@ -27,16 +27,22 @@ class MessageController extends Controller
      */
     public function index()
     {
-        $user_phone = Auth::user() ? Auth::user()->phone : '+12678719081';
+
+        dd(Auth::user());
+        $user_phone = Auth::user() ? Auth::user()->phone : '+12183211745';
 
         $messages = Msg::where(function ($query) use ($user_phone) {
                             $query->where('sender_phone', '=', $user_phone)
                                   ->orWhere('receiver_phone', '=', $user_phone);
                         })
-                        ->select('sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
-                        // ->where('occurred_at', date('Y-m-d H:i:s', strtotime('2022-10-15 14:01:01')))
-                        ->get();
-        dd($messages);
+                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                        ->orderBy('created_at', 'DESC')
+                        ->get()
+                        ->groupBy('room_id');
+
+        $last_message_array = $this->getLastMessage($messages);
+
+        return response()->json($last_message_array);
     }
 
     /**
@@ -67,8 +73,8 @@ class MessageController extends Controller
         $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
 
         $msg = Message::Create([
-            "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317
-            "to" =>   $request->receiver_phone,  // +‪12183211745‬
+            "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
+            "to" =>   $request->receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
             "text" => $request->message,
             "room_id" => $room_id
         ]);
@@ -177,5 +183,44 @@ class MessageController extends Controller
         }
 
         return response()->json($data);
+    }
+
+     /**
+     * Messages List Array Get Function.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function getLastMessage($messages)
+    {
+        $messages_array = array();
+        
+        foreach ($messages as $key => $message_arr)
+        {
+            $sort_array = $message_arr->toArray();
+            usort($sort_array, function($first, $second) {
+                return $first['created_at'] < $second['created_at'];
+            });
+
+            $sub_arr = [];
+            $sub_arr['sender_phone'] = '';
+            $sub_arr['sender_name'] = '';
+            $sub_arr['receiver_phone'] = '';
+            $sub_arr['receiver_name'] = '';
+            $sub_arr['message'] = '';
+            $sub_arr['created_at'] = '';
+
+            if (!is_null($sort_array[0])) {
+                $sub_arr['sender_phone'] = $sort_array[0]['sender_phone'];
+                $sub_arr['sender_name'] = $sort_array[0]['sender_name'];
+                $sub_arr['receiver_phone'] = $sort_array[0]['receiver_phone'];
+                $sub_arr['receiver_name'] = $sort_array[0]['receiver_name'];
+                $sub_arr['message'] = $sort_array[0]['message'];
+                $sub_arr['created_at'] = $sort_array[0]['created_at'];
+            }
+            array_push($messages_array, $sub_arr);
+        }
+        
+        return $messages_array;
     }
 }

@@ -6,9 +6,9 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
 
-        <meta name="description" content="XGAPI">
-        <meta name="keywords" content="XGAPI">
-        <meta name="author" content="XGAPI">
+        <meta name="description" content="SyndicateSMS">
+        <meta name="keywords" content="SyndicateSMS">
+        <meta name="author" content="SyndicateSMS">
         <meta name="format-detection" content="telephone=no">
 
         <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
