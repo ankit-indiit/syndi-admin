@@ -16,7 +16,7 @@ use Telnyx\NumberOrder;
 use Telnyx\PhoneNumber;
 use Telnyx\MessagingProfile;
 use Telnyx\Message;
-use DateTime;
+use Carbon\Carbon;
 
 class MessageController extends Controller
 {
@@ -27,7 +27,16 @@ class MessageController extends Controller
      */
     public function index()
     {
-        //
+        $user_phone = Auth::user() ? Auth::user()->phone : '+12678719081';
+
+        $messages = Msg::where(function ($query) use ($user_phone) {
+                            $query->where('sender_phone', '=', $user_phone)
+                                  ->orWhere('receiver_phone', '=', $user_phone);
+                        })
+                        ->select('sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                        // ->where('occurred_at', date('Y-m-d H:i:s', strtotime('2022-10-15 14:01:01')))
+                        ->get();
+        dd($messages);
     }
 
     /**
@@ -51,10 +60,17 @@ class MessageController extends Controller
         // Set Key
         Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
 
+        $last_query = Msg::where('sender_phone', $request->sender_phone)
+                        ->where('receiver_phone', $request->receiver_phone)
+                        ->orderBy('created_at', 'DESC')
+                        ->first();
+        $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
+
         $msg = Message::Create([
             "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317
             "to" =>   $request->receiver_phone,  // +‪12183211745‬
-            "text" => $request->message
+            "text" => $request->message,
+            "room_id" => $room_id
         ]);
 
         return response()->json($msg);
@@ -114,9 +130,6 @@ class MessageController extends Controller
     public function webhook(Request $request)
     {
         // dd(json_encode($request->all()));
-        // $saved_query = Msg::where('occurred_at', date('Y-m-d H:i:s', strtotime('2022-10-15 14:01:01')))
-        //                 ->first();
-        // dd($saved_query);
         
         $occurred_at = $request->data['occurred_at'];
         $payload = $request->data['payload'];
@@ -124,6 +137,12 @@ class MessageController extends Controller
         $text = $request->data['payload']['text'];
         $sender_phone = $request->data['payload']['from']['phone_number'];
         $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
+
+        $last_query = Msg::where('sender_phone', $receiver_phone)
+                        ->where('receiver_phone', $sender_phone)
+                        ->orderBy('created_at', 'DESC')
+                        ->first();
+        $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
 
         $sender_query = User::where('phone', $sender_phone)->first();
         $sender_name = $sender_query? $sender_query->first_name . ' ' . $sender_query->last_name : '';
@@ -142,6 +161,7 @@ class MessageController extends Controller
         if (is_null($saved_query1) && is_null($saved_query2)) {
             $msg = Msg::create([
                 'payload_id' => $payload_id,
+                'room_id' => $room_id,
                 'sender_phone' => $sender_phone,
                 'sender_name' => $sender_name,
                 'receiver_phone' => $receiver_phone,

@@ -24,7 +24,9 @@ Route::post('/signup', [App\Http\Controllers\API\Auth\RegisterController::class,
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
 
 // Auth
-Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
+// Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
+Route::resource('msg', MessageController::class);
+
 Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'webhook']);
 
 

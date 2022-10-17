@@ -10,6 +10,6 @@ class Msg extends Model
     use HasFactory;
 
     protected $fillable = [
-        'payload_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'room_id', 'occurred_at',
+        'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'occurred_at',
     ];
 }
