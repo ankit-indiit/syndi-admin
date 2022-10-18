@@ -92,11 +92,10 @@ class MessageController extends Controller
                             $query->where('sender_phone', '=', $receiver_phone)
                                     ->orWhere('receiver_phone', '=', $receiver_phone);
                         })
-                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                        ->select('sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->get();
 
-        // $message_array = $this->getLastMessages($messages);
         return response()->json($messages);
     }
 
@@ -216,14 +215,12 @@ class MessageController extends Controller
     protected function getLastMessages($messages)
     {
         $messages_array = array();
-        
         foreach ($messages as $key => $message_arr)
         {
             $sort_array = $message_arr->toArray();
             usort($sort_array, function($first, $second) {
                 return $first['created_at'] < $second['created_at'];
             });
-
             $sub_arr = [];
             $sub_arr['sender_phone'] = '';
             $sub_arr['sender_name'] = '';
@@ -242,7 +239,6 @@ class MessageController extends Controller
             }
             array_push($messages_array, $sub_arr);
         }
-        
         return $messages_array;
     }
 }
