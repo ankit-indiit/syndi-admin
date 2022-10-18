@@ -26,10 +26,14 @@ class MessageController extends Controller
     /**
      * Display a listing of the resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        // $token = $request->bearerToken();
+        // $token1 = $request->header('Authorization');
+
         $user_phone = Auth::user()->phone;
         $messages = Msg::where(function ($query) use ($user_phone) {
                             $query->where('sender_phone', '=', $user_phone)
