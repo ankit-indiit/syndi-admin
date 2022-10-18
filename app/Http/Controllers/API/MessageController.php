@@ -30,25 +30,18 @@ class MessageController extends Controller
      */
     public function index()
     {
-        if (is_null(Auth::user())) {
-            return response()->json([
-                'status' => 'failed',
-                'message' => 'Unauthorized user',
-            ]);
-        } else {
-            $user_phone = Auth::user()->phone;
-            $messages = Msg::where(function ($query) use ($user_phone) {
-                                $query->where('sender_phone', '=', $user_phone)
-                                      ->orWhere('receiver_phone', '=', $user_phone);
-                            })
-                            ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
-                            ->orderBy('created_at', 'DESC')
-                            ->get()
-                            ->groupBy('room_id');
-    
-            $last_message_array = $this->getLastMessages($messages);
-            return response()->json($last_message_array);
-        }
+        $user_phone = Auth::user()->phone;
+        $messages = Msg::where(function ($query) use ($user_phone) {
+                            $query->where('sender_phone', '=', $user_phone)
+                                    ->orWhere('receiver_phone', '=', $user_phone);
+                        })
+                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                        ->orderBy('created_at', 'DESC')
+                        ->get()
+                        ->groupBy('room_id');
+
+        $last_message_array = $this->getLastMessages($messages);
+        return response()->json($last_message_array);
     }
 
     /**
@@ -89,7 +82,22 @@ class MessageController extends Controller
      */
     public function show($id)
     {
-        //
+        $user_phone = Auth::user()->phone;
+        $receiver_phone = $id;
+        $messages = Msg::where(function ($query) use ($user_phone) {
+                            $query->where('sender_phone', '=', $user_phone)
+                                    ->orWhere('receiver_phone', '=', $user_phone);
+                        })
+                        ->where(function ($query) use ($receiver_phone) {
+                            $query->where('sender_phone', '=', $receiver_phone)
+                                    ->orWhere('receiver_phone', '=', $receiver_phone);
+                        })
+                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                        ->orderBy('created_at', 'DESC')
+                        ->get();
+
+        // $message_array = $this->getLastMessages($messages);
+        return response()->json($messages);
     }
 
     /**
@@ -169,7 +177,7 @@ class MessageController extends Controller
             $saved_query2 = Msg::where('sender_phone', $sender_phone)
                                 ->where('receiver_phone', $receiver_phone)
                                 ->where('message', $text)
-                                ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)))
+                                ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)-2))
                                 ->first();
 
             if (is_null($saved_query1) && is_null($saved_query2)) {
