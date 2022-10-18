@@ -163,8 +163,14 @@ class MessageController extends Controller
         }
         
         try {
-            $last_query = Msg::where('sender_phone', $receiver_phone)
-                            ->where('receiver_phone', $sender_phone)
+            $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
+                                $query->where('sender_phone', '=', $receiver_phone)
+                                        ->Where('receiver_phone', '=', $sender_phone);
+                            })
+                            ->orwhere(function ($query) use ($receiver_phone, $sender_phone) {
+                                $query->where('sender_phone', '=', $sender_phone)
+                                        ->Where('receiver_phone', '=', $receiver_phone);
+                            })
                             ->orderBy('created_at', 'DESC')
                             ->first();
             $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
