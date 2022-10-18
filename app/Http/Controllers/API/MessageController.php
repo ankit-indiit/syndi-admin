@@ -7,9 +7,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Database\QueryException;
 
 use App\Models\User;
 use App\Models\Msg;
+use App\Models\Msgerror;
+
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
 use Telnyx\NumberOrder;
@@ -131,54 +134,60 @@ class MessageController extends Controller
      */
     public function webhook(Request $request)
     {
-        // dd(json_encode($request->all()));
-        
-        $occurred_at = $request->data['occurred_at'];
-        $payload = $request->data['payload'];
-        $payload_id = $request->data['payload']['id'];
-        $text = $request->data['payload']['text'];
-        $sender_phone = $request->data['payload']['from']['phone_number'];
-        $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
+        try {
+            $occurred_at = $request->data['occurred_at'];
+            $payload = $request->data['payload'];
+            $payload_id = $request->data['payload']['id'];
+            $text = $request->data['payload']['text'];
+            $sender_phone = $request->data['payload']['from']['phone_number'];
+            $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
 
-        $last_query = Msg::where('sender_phone', $receiver_phone)
-                            ->where('receiver_phone', $sender_phone)
-                            ->orderBy('created_at', 'DESC')
-                            ->first();
-        $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
+            $last_query = Msg::where('sender_phone', $receiver_phone)
+                                ->where('receiver_phone', $sender_phone)
+                                ->orderBy('created_at', 'DESC')
+                                ->first();
+            $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
 
-        $sender_query = User::where('phone', $sender_phone)->first();
-        $sender_name = $sender_query? $sender_query->first_name . ' ' . $sender_query->last_name : '';
-        $receiver_query = User::where('phone', $receiver_phone)->first();
-        $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
+            $sender_query = User::where('phone', $sender_phone)->first();
+            $sender_name = $sender_query? $sender_query->first_name . ' ' . $sender_query->last_name : '';
+            $receiver_query = User::where('phone', $receiver_phone)->first();
+            $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
 
-        $saved_query1 = Msg::where('payload_id', $payload_id)
-                            ->first();
+            $saved_query1 = Msg::where('payload_id', $payload_id)
+                                ->first();
 
-        $saved_query2 = Msg::where('sender_phone', $sender_phone)
-                            ->where('receiver_phone', $receiver_phone)
-                            ->where('message', $text)
-                            ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)))
-                            ->first();
+            $saved_query2 = Msg::where('sender_phone', $sender_phone)
+                                ->where('receiver_phone', $receiver_phone)
+                                ->where('message', $text)
+                                ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)))
+                                ->first();
 
-        if (is_null($saved_query1) && is_null($saved_query2)) {
-            $msg = Msg::create([
-                'payload_id' => $payload_id,
-                'room_id' => $room_id,
-                'sender_phone' => $sender_phone,
-                'sender_name' => $sender_name,
-                'receiver_phone' => $receiver_phone,
-                'receiver_name' => $receiver_name,
-                // 'message' => json_encode($request->all()),
-                'message' => $text,
-                'occurred_at' => date('Y-m-d H:i:s', strtotime($occurred_at)),
+            if (is_null($saved_query1) && is_null($saved_query2)) {
+                $msg = Msg::create([
+                    'payload_id' => $payload_id,
+                    'room_id' => $room_id,
+                    'sender_phone' => $sender_phone,
+                    'sender_name' => $sender_name,
+                    'receiver_phone' => $receiver_phone,
+                    'receiver_name' => $receiver_name,
+                    // 'message' => json_encode($request->all()),
+                    'message' => $text,
+                    'occurred_at' => date('Y-m-d H:i:s', strtotime($occurred_at)),
+                ]);
+                $data = $msg;
+                
+            } else {
+                $data = $saved_query;
+            }
+            return response()->json($data);
+
+        } catch (QueryException $e) {
+            $msgerror = Msgerror::create([
+                'error' => json_encode($request->all()),
             ]);
-            $data = $msg;
-            
-        } else {
-            $data = $saved_query;
+            return response()->json($e->getMessage(), $msgerror);
         }
-
-        return response()->json($data);
+        
     }
 
      /**
