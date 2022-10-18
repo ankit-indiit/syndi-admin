@@ -134,22 +134,28 @@ class MessageController extends Controller
      */
     public function webhook(Request $request)
     {
-        $msgerror = Msgerror::create([
-            'error' => json_encode($request->all()),
-        ]);
-        
-        try {
+        $direction = $request->direction;
+
+        if ($direction == 'inbound') {
+            $occurred_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));
+            $payload_id = $request->sms_id;
+            $sender_phone = $request->from;
+            $receiver_phone = $request->to;
+            $text = $request->body;
+        } else {
             $occurred_at = $request->data['occurred_at'];
             $payload = $request->data['payload'];
             $payload_id = $request->data['payload']['id'];
             $text = $request->data['payload']['text'];
             $sender_phone = $request->data['payload']['from']['phone_number'];
             $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
-
+        }
+        
+        try {
             $last_query = Msg::where('sender_phone', $receiver_phone)
-                                ->where('receiver_phone', $sender_phone)
-                                ->orderBy('created_at', 'DESC')
-                                ->first();
+                            ->where('receiver_phone', $sender_phone)
+                            ->orderBy('created_at', 'DESC')
+                            ->first();
             $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
 
             $sender_query = User::where('phone', $sender_phone)->first();
@@ -185,13 +191,12 @@ class MessageController extends Controller
             }
             return response()->json($data);
 
-        } catch (QueryException $e) {
+        } catch (Exception $e) {
             $msgerror = Msgerror::create([
                 'error' => json_encode($request->all()),
             ]);
-            return response()->json($e->getMessage(), $msgerror);
+            return response()->json($e->getMessage());
         }
-        
     }
 
      /**

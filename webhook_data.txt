@@ -1,4 +1,4 @@
-{
+[{
     "data": {
         "event_type": "message.finalized",
         "id": "97567a32-a833-40f1-85ba-957a76339852",
@@ -47,4 +47,12 @@
         "attempt": 1,
         "delivered_to": "http:\/\/3.137.108.96\/webhook"
     }
-}
+},
+
+{
+    "sms_id": "ee7d8226-0abb-43a2-96bd-ff6f093937fe",
+    "direction": "inbound",
+    "from": "+12678719081",
+    "to": "+15056369512",
+    "body": "ok"
+}]
