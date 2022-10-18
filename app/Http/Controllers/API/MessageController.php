@@ -134,6 +134,10 @@ class MessageController extends Controller
      */
     public function webhook(Request $request)
     {
+        $msgerror = Msgerror::create([
+            'error' => json_encode($request->all()),
+        ]);
+        
         try {
             $occurred_at = $request->data['occurred_at'];
             $payload = $request->data['payload'];
