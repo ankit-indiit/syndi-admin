@@ -27,22 +27,25 @@ class MessageController extends Controller
      */
     public function index()
     {
-
-        dd(Auth::user());
-        $user_phone = Auth::user() ? Auth::user()->phone : '+12183211745';
-
-        $messages = Msg::where(function ($query) use ($user_phone) {
-                            $query->where('sender_phone', '=', $user_phone)
-                                  ->orWhere('receiver_phone', '=', $user_phone);
-                        })
-                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
-                        ->orderBy('created_at', 'DESC')
-                        ->get()
-                        ->groupBy('room_id');
-
-        $last_message_array = $this->getLastMessage($messages);
-
-        return response()->json($last_message_array);
+        if (is_null(Auth::user())) {
+            return response()->json([
+                'status' => 'failed',
+                'message' => 'Unauthorized user',
+            ]);
+        } else {
+            $user_phone = Auth::user()->phone;
+            $messages = Msg::where(function ($query) use ($user_phone) {
+                                $query->where('sender_phone', '=', $user_phone)
+                                      ->orWhere('receiver_phone', '=', $user_phone);
+                            })
+                            ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
+                            ->orderBy('created_at', 'DESC')
+                            ->get()
+                            ->groupBy('room_id');
+    
+            $last_message_array = $this->getLastMessage($messages);
+            return response()->json($last_message_array);
+        }
     }
 
     /**

@@ -14,20 +14,22 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 // Auth
 Route::post('/signup', [App\Http\Controllers\API\Auth\RegisterController::class, 'store']);
 Route::post('/numbers', [App\Http\Controllers\API\Auth\RegisterController::class, 'index']);
-
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
 
-// Auth
-// Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
-Route::resource('msg', MessageController::class);
+
+Route::middleware('auth:api')->group(function () {
+    // Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
+    Route::resource('msg', MessageController::class);
+});
+
 
 Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'webhook']);
 

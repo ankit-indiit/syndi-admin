@@ -81,8 +81,6 @@ class RegisterController extends Controller
 
         // Retrive Message Profile
         // $phone_number = PhoneNumber::Retrieve("2010018953069332345");
-        // 2010018953069332345
-        // 304d957f-48e5-49b8-a32f-ccb6848ba6a1
         // dd($phone_number);
 
         // Retrive Message Profile
@@ -92,23 +90,24 @@ class RegisterController extends Controller
         
 
         // Create Message profile
-        $new_message_profile = MessagingProfile::Create([ "enabled" => true, 
-                                                      "name" => "Profile for ".$user_phone,
-                                                      "number_pool_settings" => [ "geomatch" => false, 
-                                                                                  "long_code_weight" => 1,
-                                                                                  "skip_unhealthy" => true,
-                                                                                  "sticky_sender" => false,
-                                                                                  "toll_free_weight" => 10
-                                                                                ],
-                                                      "url_shortener_settings" => [ "domain" => "",
-                                                                                    "prefix" => "",
-                                                                                    "replace_blacklist_only" => true,
-                                                                                    "send_webhooks" => false
-                                                                                ],
-                                                      "webhook_api_version" => "2",
-                                                      "webhook_failover_url" => "",
-                                                      "webhook_url" => "http://3.137.108.96/webhook"
-                                                    ]);
+        $new_message_profile = MessagingProfile::Create([
+            "enabled" => true, 
+            "name" => "Profile for ".$user_phone,
+            "number_pool_settings" => [ "geomatch" => false, 
+                                        "long_code_weight" => 1,
+                                        "skip_unhealthy" => true,
+                                        "sticky_sender" => false,
+                                        "toll_free_weight" => 10
+                                    ],
+            "url_shortener_settings" => [ "domain" => "",
+                                        "prefix" => "",
+                                        "replace_blacklist_only" => true,
+                                        "send_webhooks" => false
+                                    ],
+            "webhook_api_version" => "2",
+            "webhook_failover_url" => "",
+            "webhook_url" => "http://3.137.108.96/webhook"
+        ]);
         $msg_profile_id = $new_message_profile->id;
 
 
