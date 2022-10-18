@@ -145,4 +145,54 @@ class LoginController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Reset password.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function resetPassword(Request $request)
+    {
+        $email = $request->email;
+        $phone = $request->phone;
+
+        if ($phone == '') {
+            $request->validate([
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ]);
+            $credentials = $request->only('email', 'password');
+        }
+
+        if ($email == '') {
+            $request->validate([
+                'phone' => 'required|string',
+                'password' => 'required|string',
+            ]);
+            $credentials = $request->only('phone', 'password');
+        }
+
+        $attempt = Auth::attempt($credentials);
+        if (!$attempt) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Unauthorized',
+            ], 401);
+        }
+
+        $user = Auth::user();
+        $token = auth()->user()->createToken('API Token')->accessToken;
+        // $auth_token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
+        
+        return response()->json([
+            'status' => 'success',
+            'message' => 'User logged in successfully',
+            'data' => [
+                'user' => $user,
+                'token' => $token,
+                // 'auth_token' => $auth_token,
+            ]
+        ]);
+    }
 }

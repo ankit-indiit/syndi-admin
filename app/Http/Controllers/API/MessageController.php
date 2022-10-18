@@ -43,7 +43,7 @@ class MessageController extends Controller
                             ->get()
                             ->groupBy('room_id');
     
-            $last_message_array = $this->getLastMessage($messages);
+            $last_message_array = $this->getLastMessages($messages);
             return response()->json($last_message_array);
         }
     }
@@ -68,18 +68,11 @@ class MessageController extends Controller
     {
         // Set Key
         Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
-
-        $last_query = Msg::where('sender_phone', $request->sender_phone)
-                        ->where('receiver_phone', $request->receiver_phone)
-                        ->orderBy('created_at', 'DESC')
-                        ->first();
-        $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
-
+        
         $msg = Message::Create([
             "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
             "to" =>   $request->receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
             "text" => $request->message,
-            "room_id" => $room_id
         ]);
 
         return response()->json($msg);
@@ -148,9 +141,9 @@ class MessageController extends Controller
         $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
 
         $last_query = Msg::where('sender_phone', $receiver_phone)
-                        ->where('receiver_phone', $sender_phone)
-                        ->orderBy('created_at', 'DESC')
-                        ->first();
+                            ->where('receiver_phone', $sender_phone)
+                            ->orderBy('created_at', 'DESC')
+                            ->first();
         $room_id = $last_query? $last_query->room_id : Carbon::now()->timestamp;
 
         $sender_query = User::where('phone', $sender_phone)->first();
@@ -194,7 +187,7 @@ class MessageController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    protected function getLastMessage($messages)
+    protected function getLastMessages($messages)
     {
         $messages_array = array();
         

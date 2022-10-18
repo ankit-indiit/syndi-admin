@@ -27,6 +27,7 @@ Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'st
 
 Route::middleware('auth:api')->group(function () {
     // Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
+    Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
     Route::resource('msg', MessageController::class);
 });
 
