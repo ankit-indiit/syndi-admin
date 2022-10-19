@@ -42,9 +42,8 @@ class ResetController extends Controller
     {
         $email = $request->email;
         $phone = $request->phone;
-        // dd($email, $phone);
 
-        if (isset($email)) {
+        if ($email == '') {
             $user = User::where('email', $email)->first();
         } else {
             $user = User::where('phone', $phone)->first();   
@@ -55,6 +54,7 @@ class ResetController extends Controller
             'message' => 'In progressing',
             'data' => [
                 'user' => $user,
+                'reset_link' => 'https://docs.google.com/document/d/1Hd0bDsNTYh2zi3xENJql_pICHcj2IxdeW1Tr5qgK9eQ/edit',
             ]
         ]);
     }

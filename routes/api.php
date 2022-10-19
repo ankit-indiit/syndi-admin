@@ -33,6 +33,7 @@ Route::middleware('auth:api')->group(function () {
 
 
 Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'webhook']);
+Route::post('/pushser', [App\Http\Controllers\API\MessageController::class, 'messagePusher']);
 
 
 

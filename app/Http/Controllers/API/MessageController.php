@@ -21,6 +21,9 @@ use Telnyx\MessagingProfile;
 use Telnyx\Message;
 use Carbon\Carbon;
 
+use App\Events\NewMessage;
+use App\Events\MessageStatusUpdate;
+
 class MessageController extends Controller
 {
     /**
@@ -202,7 +205,9 @@ class MessageController extends Controller
                     'occurred_at' => date('Y-m-d H:i:s', strtotime($occurred_at)),
                 ]);
                 $data = $msg;
-                
+
+                $event = MessageStatusUpdate::dispatch($receiver_phone, $text);
+
             } else {
                 $data = $saved_query;
             }
@@ -214,6 +219,19 @@ class MessageController extends Controller
             ]);
             return response()->json($e->getMessage());
         }
+    }
+
+    public function messagePusher(Request $request)
+    {
+        $receiver_phone = $request->receiver_phone;
+        $text = $request->message;
+
+        $event = MessageStatusUpdate::dispatch($receiver_phone, $text);
+        // $event = event(new MessageStatusUpdate($receiver_phone, $text));
+        // $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
+        // broadcast(new NewMessage($data))->toOthers();
+
+        return response()->json($event);
     }
 
      /**
