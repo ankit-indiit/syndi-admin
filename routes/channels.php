@@ -19,9 +19,9 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });
 
-Broadcast::channel('chat-room', function ($user) {
-    return Auth::check();
-});
+// Broadcast::channel('chat-room', function ($user) {
+//     return Auth::check();
+// });
 
 Broadcast::channel('Msg.{id}', function ($msg, $id) {
     return (int) $msg->id === (int) $id;
