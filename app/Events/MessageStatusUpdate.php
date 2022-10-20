@@ -24,7 +24,7 @@ class MessageStatusUpdate implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(User $user, Msg $message)
+    public function __construct($user, $message)
     {
         $this->user = $user;
         $this->message = $message;
@@ -39,7 +39,8 @@ class MessageStatusUpdate implements ShouldBroadcast
     {
         // return new PrivateChannel('chat-room');
         // return new PrivateChannel('msg.'.$this->user);
-        return ['chat-room'];
+        // return ['chat-room'];
+        return new Channel('chat-room');
     }
 
     public function broadcastWith()
