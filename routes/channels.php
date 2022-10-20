@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Msg;
 
 /*
@@ -16,6 +17,10 @@ use App\Models\Msg;
 
 Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
+});
+
+Broadcast::channel('chat-room', function ($user) {
+    return Auth::check();
 });
 
 Broadcast::channel('Msg.{id}', function ($msg, $id) {

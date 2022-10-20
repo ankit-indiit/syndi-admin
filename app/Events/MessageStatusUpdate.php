@@ -10,20 +10,23 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
+use App\Models\User;
+use App\Models\Msg;
+
 class MessageStatusUpdate implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $message;
-    public $user_phone;
+    public $user;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($user_phone, $message)
+    public function __construct(User $user, Msg $message)
     {
-        $this->user_phone = $user_phone;
+        $this->user = $user;
         $this->message = $message;
     }
 
@@ -35,7 +38,7 @@ class MessageStatusUpdate implements ShouldBroadcast
     public function broadcastOn()
     {
         // return new PrivateChannel('syndicate.message');
-        // return new PrivateChannel('msg.'.$this->user_phone);
+        // return new PrivateChannel('msg.'.$this->user);
         return ['chat-room'];
     }
 
@@ -54,7 +57,7 @@ class MessageStatusUpdate implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'message';
+        //return 'message';
     }
 
 }
