@@ -206,11 +206,8 @@ class MessageController extends Controller
                 ]);
                 $data = $msg;
 
-                // $sender_user = User::where('phone', $sender_phone)->first();
-                broadcast(new MessageStatusUpdate($sender_user, $text))->toOthers();
-                $event = MessageStatusUpdate::dispatch($sender_phone, $text);
-                $event = event(new MessageStatusUpdate($receiver_phone, $text));
-                $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
+                // $event = NewMessage::dispatch($sender_phone, $text);
+                $event = event(new NewMessage($receiver_phone, $text));
 
             } else {
                 $data = $saved_query;
@@ -227,15 +224,15 @@ class MessageController extends Controller
 
     public function messagePusher(Request $request)
     {
-        $receiver_phone = $request->receiver_phone;
+        $sender_phone = $request->sender_phone;
         $text = $request->message;
 
-        $event = MessageStatusUpdate::dispatch($receiver_phone, $text);
-        $event = event(new MessageStatusUpdate($receiver_phone, $text));
-        $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
-        broadcast(new MessageStatusUpdate($receiver_phone, $text))->toOthers();
+        $event = NewMessage::dispatch($sender_phone, $text);
+        // $event = event(new NewMessage($sender_phone, $text));
+        // $event = broadcast(new NewMessage($sender_phone, $text));
+        // broadcast(new NewMessage($sender_phone, $text))->toOthers();
 
-        return response()->json($event);
+        return response()->json(['sender_phone' => $sender_phone, 'message' => $text]);
     }
 
      /**

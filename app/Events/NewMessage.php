@@ -2,7 +2,6 @@
 
 namespace App\Events;
 
-use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -14,23 +13,18 @@ use Illuminate\Queue\SerializesModels;
 class NewMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    /**
-     * The user that created the server.
-     *
-     * @var \App\Models\User
-     */
-    public $user;
+    public $message;
+    public $sender_phone;
 
     /**
      * Create a new event instance.
      *
-     * @param  \App\Models\User  $user
      * @return void
      */
-    public function __construct(User $user)
+    public function __construct($sender_phone, $message)
     {
-        $this->user = $user;
+        $this->sender_phone = $sender_phone;
+        $this->message = $message;
     }
 
     /**
@@ -40,8 +34,16 @@ class NewMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        // return new PrivateChannel('msgs'.$this->msg->id);
-        return new PrivateChannel('user.'.$this->user->id);
+        // return new PrivateChannel('msg.'.$this->sender_phone);
+        return new Channel('chat-room');
+    }
+
+    public function broadcastWith()
+    {
+        return [
+            'sender_phone' => $this->sender_phone,
+            'message' => $this->message
+        ];
     }
 
     /**
@@ -51,6 +53,6 @@ class NewMessage implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'syndicate.message';
+        return 'message';
     }
 }

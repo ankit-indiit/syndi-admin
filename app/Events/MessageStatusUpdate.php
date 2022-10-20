@@ -16,15 +16,15 @@ use App\Models\Msg;
 class MessageStatusUpdate implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public string $message;
-    public string $sender_phone;
+    public $message;
+    public $sender_phone;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct(string $sender_phone, string $message)
+    public function __construct($sender_phone, $message)
     {
         $this->sender_phone = $sender_phone;
         $this->message = $message;
@@ -58,7 +58,7 @@ class MessageStatusUpdate implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        //return 'message';
+        return 'newmessage';
     }
 
 }

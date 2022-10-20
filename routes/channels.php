@@ -21,8 +21,8 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 
 Broadcast::channel('chat-room', function ($sender_phone, $message) {
     return [
-        "sender_phone" => $this->sender_phone,
-        "message" => $this->message,
+        "sender_phone" => $sender_phone,
+        "message" => $message,
     ];
 });
 
