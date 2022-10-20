@@ -17,16 +17,16 @@ class MessageStatusUpdate implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
     public $message;
-    public $user;
+    public $user_phone;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($user, $message)
+    public function __construct($user_phone, $message)
     {
-        $this->user = $user;
+        $this->user_phone = $user_phone;
         $this->message = $message;
     }
 
@@ -38,7 +38,7 @@ class MessageStatusUpdate implements ShouldBroadcast
     public function broadcastOn()
     {
         // return new PrivateChannel('chat-room');
-        // return new PrivateChannel('msg.'.$this->user);
+        // return new PrivateChannel('msg.'.$this->user_phone);
         // return ['chat-room'];
         return new Channel('chat-room');
     }
