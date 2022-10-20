@@ -36,7 +36,7 @@ class MessageStatusUpdate implements ShouldBroadcast
     {
         // return new PrivateChannel('syndicate.message');
         // return new PrivateChannel('msg.'.$this->user_phone);
-        return ['chat'];
+        return ['chat-room'];
     }
 
     public function broadcastWith()
