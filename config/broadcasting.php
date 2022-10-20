@@ -40,7 +40,7 @@ return [
                 'useTLS' => true,
                 'encrypted' => true,
                 // 'host' => '127.0.0.1',
-                'host' => 'https://api.syndicatesms.com',
+                'host' => 'api.syndicatesms.com',
                 'port' => 6001,
                 'scheme' => 'https',
                 // 'scheme' => 'http',
