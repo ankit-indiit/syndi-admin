@@ -207,9 +207,9 @@ class MessageController extends Controller
                 $data = $msg;
 
                 $sender_user = User::where('phone', $sender_phone)->first();
-                broadcast(new MessageStatusUpdate($sender_user, $msg))->toOthers();
+                // broadcast(new MessageStatusUpdate($sender_user, $msg))->toOthers();
 
-                // $event = MessageStatusUpdate::dispatch($sender_user, $msg);
+                $event = MessageStatusUpdate::dispatch($sender_user, $msg);
 
             } else {
                 $data = $saved_query;
