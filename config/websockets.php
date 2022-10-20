@@ -27,8 +27,7 @@ return [
             'name' => env('APP_NAME'),
             'key' => env('PUSHER_APP_KEY'),
             'secret' => env('PUSHER_APP_SECRET'),
-            'path' => env('PUSHER_APP_PATH'),
-            'capacity' => null,
+            // 'path' => env('PUSHER_APP_PATH'),
             'enable_client_messages' => false,
             'enable_statistics' => true,
         ],
@@ -69,8 +68,8 @@ return [
      * the existing middleware. Or, you can simply stick with this list.
      */
     'middleware' => [
-        // 'web',
-        'api',
+        'web',
+        // 'api',
         Authorize::class,
     ],
 

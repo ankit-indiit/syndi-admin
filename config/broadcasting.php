@@ -38,12 +38,13 @@ return [
             'options' => [
                 'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
-                // 'encrypted' => true,
+                'encrypted' => true,
                 // 'host' => '127.0.0.1',
-                'host' => 'api.syndicatesms.com',
-                // 'port' => 6001,
+                'host' => 'https://api.syndicatesms.com',
+                'port' => 6001,
                 'scheme' => 'https',
                 // 'scheme' => 'http',
+                // 'debug' => true,
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,
                     CURLOPT_SSL_VERIFYPEER => 0,
