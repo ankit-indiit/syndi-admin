@@ -209,6 +209,8 @@ class MessageController extends Controller
                 // $sender_user = User::where('phone', $sender_phone)->first();
                 broadcast(new MessageStatusUpdate($sender_user, $text))->toOthers();
                 $event = MessageStatusUpdate::dispatch($sender_phone, $text);
+                $event = event(new MessageStatusUpdate($receiver_phone, $text));
+                $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
 
             } else {
                 $data = $saved_query;
@@ -229,9 +231,9 @@ class MessageController extends Controller
         $text = $request->message;
 
         $event = MessageStatusUpdate::dispatch($receiver_phone, $text);
-        // $event = event(new MessageStatusUpdate($receiver_phone, $text));
-        // $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
-        // broadcast(new NewMessage($data))->toOthers();
+        $event = event(new MessageStatusUpdate($receiver_phone, $text));
+        $event = broadcast(new MessageStatusUpdate($receiver_phone, $text));
+        broadcast(new MessageStatusUpdate($receiver_phone, $text))->toOthers();
 
         return response()->json($event);
     }

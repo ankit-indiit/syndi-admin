@@ -69,8 +69,8 @@ return [
      * the existing middleware. Or, you can simply stick with this list.
      */
     'middleware' => [
-        // 'web',
-        'api',
+        'web',
+        // 'api',
         Authorize::class,
     ],
 
@@ -131,7 +131,9 @@ return [
         // 'passphrase' => env('LARAVEL_WEBSOCKETS_SSL_PASSPHRASE', null),
         'passphrase' => null,
 
-        'verify_peer' => false
+        // For self signed ssl cert
+        'verify_peer' => false,
+        'verify_peer_name' => false
     ],
 
     /*
