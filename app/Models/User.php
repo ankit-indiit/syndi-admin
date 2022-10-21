@@ -30,4 +30,9 @@ class User extends Authenticatable
         'password', 'remember_token', 'dpassword', 
     ];
 
+    public function msg()
+    {
+        // return $this->hasMany(Msg::class);
+    }
+
 }

@@ -12,4 +12,8 @@ class Msg extends Model
     protected $fillable = [
         'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'occurred_at',
     ];
+
+    public function user() {
+        // return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

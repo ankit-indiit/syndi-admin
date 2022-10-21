@@ -42,9 +42,9 @@ return [
                 // 'host' => '127.0.0.1',
                 // 'scheme' => 'http',
                 'encrypted' => true,
-                'host' => 'api.syndicatesms.com',
-                'port' => 6001,
-                'scheme' => 'https',
+                // 'host' => 'api.syndicatesms.com',
+                // 'port' => 6001,
+                // 'scheme' => 'https',
                 'curl_options' => [
                     CURLOPT_SSL_VERIFYHOST => 0,
                     CURLOPT_SSL_VERIFYPEER => 0,
