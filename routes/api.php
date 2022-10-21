@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/signup', [App\Http\Controllers\API\Auth\RegisterController::class, 'store']);
 Route::post('/numbers', [App\Http\Controllers\API\Auth\RegisterController::class, 'index']);
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
-Route::resource('/reset', Auth\ResetController::class);
+Route::resource('/reset-password', Auth\ResetController::class);
 
 Route::middleware('auth:api')->group(function () {
     // Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);

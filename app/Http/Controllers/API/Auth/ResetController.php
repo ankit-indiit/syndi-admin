@@ -108,7 +108,34 @@ class ResetController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $token = $id;
+        $reset_user = DB::table('password_resets')->where('token', $token)->first();
+
+        if (is_null($reset_user))
+        {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Invaild user or token.',
+            ]);
+        } else {
+            $user_update = DB::table('users')
+                            ->where('email', $reset_user->email)
+                            ->update(array(
+                                'password' => Hash::make($request->password),
+                                'dpassword' => $request->password
+                            ));
+            $token_delete = DB::table('password_resets')->where('token', $token)->delete();
+            $user = DB::table('users')->where('email', $reset_user->email)->first();
+
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'The new password is reset successfully.',
+                'data' => [
+                    'user' => $user,
+                ]
+            ]);
+        }
+
     }
 
     /**
