@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class ResetController extends Controller
 {
@@ -40,23 +41,32 @@ class ResetController extends Controller
      */
     public function store(Request $request)
     {
-        $email = $request->email;
-        $phone = $request->phone;
+        $email = $request->email? $request->email : '';
+        $phone = $request->phone? $request->phone : '';
 
         if ($email == '') {
-            $user = User::where('email', $email)->first();
-        } else {
             $user = User::where('phone', $phone)->first();   
+        } else {
+            $user = User::where('email', $email)->first();
         }
-        
-        return response()->json([
-            'status' => 'Success',
-            'message' => 'In progressing',
-            'data' => [
-                'user' => $user,
-                'reset_link' => 'https://docs.google.com/document/d/1Hd0bDsNTYh2zi3xENJql_pICHcj2IxdeW1Tr5qgK9eQ/edit',
-            ]
-        ]);
+
+        if (is_null($user)) {
+            return response()->json([
+                'status' => 'Error',
+                'message' => 'Invaild user',
+            ]);
+        } else {
+            $token = Str::random(60);
+            return response()->json([
+                'status' => 'Success',
+                'message' => 'The password reset link sent to the user email.',
+                'data' => [
+                    'user' => $user,
+                    'token' => $token,
+                    'reset_link' => 'https://dev.syndicatesms.com/reset-password?token='.$token,
+                ]
+            ]);
+        }
     }
 
     /**
