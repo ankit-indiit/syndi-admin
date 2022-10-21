@@ -207,7 +207,7 @@ class MessageController extends Controller
                 $data = $msg;
 
                 // $event = NewMessage::dispatch($sender_phone, $text);
-                $event = event(new NewMessage($receiver_phone, $text));
+                $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $occurred_at));
 
             } else {
                 $data = $saved_query;
@@ -225,14 +225,27 @@ class MessageController extends Controller
     public function messagePusher(Request $request)
     {
         $sender_phone = $request->sender_phone;
-        $text = $request->message;
+        $sender_name = $request->sender_name;
+        $receiver_phone = $request->receiver_phone;
+        $receiver_name = $request->receiver_name;
+        $message = $request->message;
+        $created_at = $request->created_at;
 
-        $event = NewMessage::dispatch($sender_phone, $text);
+        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at));
         // $event = event(new NewMessage($sender_phone, $text));
         // $event = broadcast(new NewMessage($sender_phone, $text));
         // broadcast(new NewMessage($sender_phone, $text))->toOthers();
 
-        return response()->json(['sender_phone' => $sender_phone, 'message' => $text]);
+        return response()->json(
+            [
+                'sender_phone' => $sender_phone,
+                'sender_name' => $sender_name,
+                'receiver_phone' => $receiver_phone,
+                'receiver_name' => $receiver_name,
+                'message' => $message,
+                'created_at' => $created_at
+            ]
+        );
     }
 
      /**

@@ -16,18 +16,26 @@ use App\Models\Msg;
 class NewMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-    public $message;
     public $sender_phone;
+    public $sender_name;
+    public $receiver_phone;
+    public $receiver_name;
+    public $message;
+    public $created_at;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($sender_phone, $message)
+    public function __construct($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at)
     {
         $this->sender_phone = $sender_phone;
+        $this->sender_name = $sender_name;
+        $this->receiver_phone = $receiver_phone;
+        $this->receiver_name = $receiver_name;
         $this->message = $message;
+        $this->created_at = $created_at;
     }
 
     /**
@@ -45,7 +53,11 @@ class NewMessage implements ShouldBroadcast
     {
         return [
             'sender_phone' => $this->sender_phone,
-            'message' => $this->message
+            'sender_name' => $this->sender_name,
+            'receiver_phone' => $this->receiver_phone,
+            'receiver_name' => $this->receiver_name,
+            'message' => $this->message,
+            'created_at' => $this->created_at,
         ];
     }
 
