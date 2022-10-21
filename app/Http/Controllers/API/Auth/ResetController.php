@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 
 use App\Models\User;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class ResetController extends Controller
 {
@@ -50,13 +52,19 @@ class ResetController extends Controller
             $user = User::where('email', $email)->first();
         }
 
-        if (is_null($user)) {
+        if (is_null($user))
+        {
             return response()->json([
                 'status' => 'Error',
                 'message' => 'Invaild user',
             ]);
         } else {
             $token = Str::random(60);
+            $reset_user = DB::table('password_resets')->insert([
+                'email' => $user->email,
+                'token' => $token,
+                'created_at' => Carbon::now(),
+            ]);
             return response()->json([
                 'status' => 'Success',
                 'message' => 'The password reset link sent to the user email.',
