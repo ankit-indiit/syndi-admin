@@ -71,7 +71,7 @@ class ResetController extends Controller
                 'data' => [
                     'user' => $user,
                     'token' => $token,
-                    'reset_link' => 'https://dev.syndicatesms.com/reset-password?token='.$token,
+                    'reset_link' => 'https://dev.syndicatesms.com/auth/reset-password?token='.$token,
                 ]
             ]);
         }
