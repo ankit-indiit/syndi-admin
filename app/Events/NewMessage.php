@@ -46,13 +46,13 @@ class NewMessage implements ShouldBroadcast
         ];
     }
 
-    /**
-     * The event's broadcast name.
-     *
-     * @return string
-     */
-    public function broadcastAs()
-    {
-        return 'message';
-    }
+    // /**
+    //  * The event's broadcast name.
+    //  *
+    //  * @return string
+    //  */
+    // public function broadcastAs()
+    // {
+    //     return 'message';
+    // }
 }
