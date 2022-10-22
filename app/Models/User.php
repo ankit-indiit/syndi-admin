@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'account_id', 'full_name', 'email', 'company', 'phone', 'timezone', 'email_verified_at', 'password', 'dpassword', 
+        'account_id', 'full_name', 'email', 'email_verified_at', 'company', 'group', 'phone', 'timezone', 'password', 'dpassword', 
     ];
 
     /**
@@ -32,7 +32,7 @@ class User extends Authenticatable
 
     public function msg()
     {
-        // return $this->hasMany(Msg::class);
+        return $this->hasMany(Msg::class);
     }
 
 }

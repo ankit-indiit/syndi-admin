@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class UserSeeder extends Seeder
 {
@@ -15,9 +19,64 @@ class UserSeeder extends Seeder
     public function run()
     {
         User::create([
-            'name'      => 'go-jeep.myshopify.com',
-            'email'     => 'ericseezzadev@outlook.com',
-            'password'  => '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',
+            'account_id'      => '',
+            'full_name'     => 'Air Jordan',
+            'email'  => 'admin@gmail.com',
+            'company'  => '',
+            'phone'  => '+15056369512',
+            'timezone'  => '',
+            'password' => Hash::make('123123'),
+            'dpassword'  => '123123',
+        ]);
+        User::create([
+            'account_id'      => '',
+            'full_name'     => 'Noman Ahmed',
+            'email'  => 'nomanahmeda789@gmail.com',
+            'company'  => '',
+            'phone'  => '+15512647183',
+            'timezone'  => '',
+            'password' => Hash::make('123456'),
+            'dpassword'  => '123456',
+        ]);
+        User::create([
+            'account_id'      => '',
+            'full_name'     => 'Test User',
+            'email'  => 'test@gmail.com',
+            'company'  => '',
+            'phone'  => '+15512094584',
+            'timezone'  => '',
+            'password' => Hash::make('12345678'),
+            'dpassword'  => '12345678',
+        ]);
+        User::create([
+            'account_id'      => '',
+            'full_name'     => 'Noman ahmed',
+            'email'  => 'nomanahmeda7898@gmail.com',
+            'company'  => '',
+            'phone'  => '+15512720130',
+            'timezone'  => '',
+            'password' => Hash::make('123456789'),
+            'dpassword'  => '123456789',
+        ]);
+        User::create([
+            'account_id'      => '',
+            'full_name'     => 'Chris Jordan',
+            'email'  => 'chrisjordan@gmail.com',
+            'company'  => '',
+            'phone'  => '+12017818160',
+            'timezone'  => '',
+            'password' => Hash::make('12345678'),
+            'dpassword'  => '12345678',
+        ]);
+        User::create([
+            'account_id'      => '',
+            'full_name'     => 'Jack Haris',
+            'email'  => 'jackharis@gmail.com',
+            'company'  => '',
+            'phone'  => '+12017818846',
+            'timezone'  => '',
+            'password' => Hash::make('12345678'),
+            'dpassword'  => '12345678',
         ]);
     }
 }

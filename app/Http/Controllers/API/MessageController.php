@@ -179,9 +179,10 @@ class MessageController extends Controller
             $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
 
             $sender_query = User::where('phone', $sender_phone)->first();
-            $sender_name = $sender_query? $sender_query->first_name . ' ' . $sender_query->last_name : '';
+            $sender_name = $sender_query? $sender_query->full_name : '';
+            $sender_id = $sender_query? $sender_query->id : '';
             $receiver_query = User::where('phone', $receiver_phone)->first();
-            $receiver_name = $receiver_query? $receiver_query->first_name . ' ' . $receiver_query->last_name : '';
+            $receiver_name = $receiver_query? $receiver_query->full_name : '';
 
             $saved_query1 = Msg::where('payload_id', $payload_id)
                                 ->first();
@@ -194,6 +195,7 @@ class MessageController extends Controller
 
             if (is_null($saved_query1) && is_null($saved_query2)) {
                 $msg = Msg::create([
+                    'user_id' => $sender_id, // Sender ID
                     'payload_id' => $payload_id,
                     'room_id' => $room_id,
                     'sender_phone' => $sender_phone,

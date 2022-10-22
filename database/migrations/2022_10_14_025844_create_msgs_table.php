@@ -15,6 +15,8 @@ class CreateMsgsTable extends Migration
     {
         Schema::create('msgs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->string('payload_id')->nullable();
             $table->string('room_id')->nullable();
             $table->string('sender_phone')->nullable();
@@ -22,6 +24,8 @@ class CreateMsgsTable extends Migration
             $table->string('receiver_phone')->nullable();
             $table->string('receiver_name')->nullable();
             $table->text('message')->nullable();
+            $table->boolean('read')->default(false);
+            $table->dateTime('schedule')->nullable();
             $table->dateTime('occurred_at')->nullable();
             $table->timestamps();
         });
