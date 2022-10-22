@@ -69,12 +69,13 @@ class MultiMessageController extends Controller
         // Set Key
         Telnyx::setApiKey(env('TELNYX_API_KEY'));
 
+        $msg_arr = array();
         $sender_phone = $request->sender_phone;
         $receiver_phones = $request->receiver_phones;
         $text = $request->message;
         $send_now = $request->send_now;
-        $schedule_at = $request->schedule_date_time;
-
+        $schedule_at = $request->schedule_at;
+        
         foreach ($receiver_phones as $key => $receiver_phone)
         {
             if ($send_now) {
@@ -112,13 +113,14 @@ class MultiMessageController extends Controller
                 'receiver_phone' => $receiver_phone,
                 'receiver_name' => $receiver_name,
                 'message' => $text,
-                'schedule_at' => date('Y-m-d H:i:s', strtotime($schedule_date_time)),
+                'schedule_at' => $send_now? null: date('Y-m-d H:i:s', strtotime($schedule_at)),
             ]);
 
             // $event = NewMessage::dispatch($sender_phone, $text);
             $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
-            return response()->json($msg);
+            array_push($msg_arr, $msg);
         }
+        return response()->json($msg_arr);
     }
 
     /**
