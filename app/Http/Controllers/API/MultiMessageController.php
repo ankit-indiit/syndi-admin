@@ -177,6 +177,8 @@ class MultiMessageController extends Controller
      */
     public function scheduleMultiMessage()
     {
+        Telnyx::setApiKey(env('TELNYX_API_KEY'));
+        
         $schedule_query = Msg::where('schedule_at', '!=', null)
                             ->where('schedule_sent', 0)
                             ->get();
