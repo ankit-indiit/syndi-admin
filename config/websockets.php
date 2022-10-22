@@ -128,8 +128,8 @@ return [
         /*
          * Passphrase for your local_cert file.
          */
-        // 'passphrase' => env('LARAVEL_WEBSOCKETS_SSL_PASSPHRASE', null),
-        'passphrase' => null,
+        'passphrase' => env('LARAVEL_WEBSOCKETS_SSL_PASSPHRASE', null),
+        // 'passphrase' => null,
 
         // For self signed ssl cert
         'verify_peer' => false,

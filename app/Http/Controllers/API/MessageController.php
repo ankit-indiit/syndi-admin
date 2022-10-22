@@ -70,7 +70,7 @@ class MessageController extends Controller
     public function store(Request $request)
     {
         // Set Key
-        Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
+        Telnyx::setApiKey(env('TELNYX_API_KEY'));
         
         $msg = Message::Create([
             "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
