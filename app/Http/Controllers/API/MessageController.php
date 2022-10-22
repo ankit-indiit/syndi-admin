@@ -167,6 +167,9 @@ class MessageController extends Controller
             $text = $request->data['payload']['text'];
             $sender_phone = $request->data['payload']['from']['phone_number'];
             $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
+
+            // $sender_phone = $request->sender_phone;
+            // $receiver_phone = $request->receiver_phone;
         }
         
         try {
@@ -184,10 +187,10 @@ class MessageController extends Controller
 
             $sender_query = User::where('phone', $sender_phone)->first();
             $sender_name = $sender_query? $sender_query->full_name : '';
-            $sender_id = $sender_query? $sender_query->id : '';
+            $sender_id = $sender_query? $sender_query->id : null;
             $receiver_query = User::where('phone', $receiver_phone)->first();
             $receiver_name = $receiver_query? $receiver_query->full_name : '';
-
+            
             $saved_query1 = Msg::where('payload_id', $payload_id)
                                 ->first();
 
