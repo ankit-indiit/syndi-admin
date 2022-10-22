@@ -22,7 +22,6 @@ use Telnyx\Message;
 use Carbon\Carbon;
 
 use App\Events\NewMessage;
-use App\Events\MessageStatusUpdate;
 
 class MultiMessageController extends Controller
 {
@@ -166,5 +165,41 @@ class MultiMessageController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Schedule Multi Message.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     * 
+     */
+    public function scheduleMultiMessage()
+    {
+        $schedule_query = Msg::where('schedule_at', '!=', null)
+                            ->where('schedule_sent', 0)
+                            ->get();
+
+        foreach ($schedule_query as $key => $value)
+        {
+            $current_time = Carbon::now()->timestamp;
+            $schedule_at = strtotime($value->schedule_at);
+
+            if ($schedule_at != 0 && $current_time >= $schedule_at)
+            {
+                $msg = Message::Create([
+                    "from" => $value->sender_phone,
+                    "to" =>   $value->receiver_phone,
+                    "text" => $value->message,
+                ]);
+
+                $msg_update = DB::table('msgs')
+                                ->where('id', $value->id)
+                                ->update(array(
+                                    'schedule_sent' => 1,
+                                ));
+            }
+        }
     }
 }

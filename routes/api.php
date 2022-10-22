@@ -33,8 +33,10 @@ Route::middleware('auth:api')->group(function () {
 });
 
 
+// Test API
 Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'webhook']);
 Route::post('/pushser', [App\Http\Controllers\API\MessageController::class, 'messagePusher']);
+Route::get('/cron', [App\Http\Controllers\API\MultiMessageController::class, 'scheduleMultiMessage']);
 
 
 

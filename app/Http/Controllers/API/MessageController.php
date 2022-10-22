@@ -22,7 +22,6 @@ use Telnyx\Message;
 use Carbon\Carbon;
 
 use App\Events\NewMessage;
-use App\Events\MessageStatusUpdate;
 
 class MessageController extends Controller
 {
@@ -42,6 +41,7 @@ class MessageController extends Controller
                             $query->where('sender_phone', '=', $user_phone)
                                     ->orWhere('receiver_phone', '=', $user_phone);
                         })
+                        ->where('schedule_at', null)
                         ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->get()
@@ -133,6 +133,7 @@ class MessageController extends Controller
                             $query->where('sender_phone', '=', $receiver_phone)
                                     ->orWhere('receiver_phone', '=', $receiver_phone);
                         })
+                        ->where('schedule_at', null)
                         ->select('sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->get();

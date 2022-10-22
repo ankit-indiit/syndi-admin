@@ -2,9 +2,8 @@
 
 namespace App\Console;
 
-use App\Jobs\ProductsGetJob;
 use App\Http\Controllers\AppController;
-use App\Http\Controllers\ShopifyController;
+use App\Http\Controllers\API\MultiMessageController;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -17,9 +16,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-    //     Commands\GroupPurchaseOpen::class,
-    //     // 'App\Console\Commands\GroupPurchaseOpen',
-        \App\Console\Commands\ShipTrackCron::class
+        // 'App\Console\Commands\GroupPurchaseOpen',
     ];
 
     /**
@@ -30,12 +27,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('groupopen:cron')->everyMinute();
-
         $schedule->call(function () {
-            $controller = new ShopifyController();
-            $controller->getProducts();
-        })->daily();
+            $controller = new MultiMessageController();
+            $controller->scheduleMultiMessage();
+        })->everyMinute();
     }
 
     /**
