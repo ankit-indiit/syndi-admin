@@ -201,8 +201,12 @@ class MultiMessageController extends Controller
                                 ->where('id', $value->id)
                                 ->update(array(
                                     'schedule_sent' => 1,
+                                    'created_at' => Carbon::now(),
+                                    'updated_at' => Carbon::now(),
                                 ));
             }
         }
+
+        return response()->json($schedule_query);
     }
 }

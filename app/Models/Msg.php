@@ -10,7 +10,8 @@ class Msg extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message','read', 'schedule_at', 'schedule_sent', 'created_at',
+        'user_id', 'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 
+        'message','read', 'schedule_at', 'schedule_sent', 'created_at', 'updated_at',
     ];
 
     public function user() {
