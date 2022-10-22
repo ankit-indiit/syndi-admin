@@ -200,13 +200,12 @@ class MultiMessageController extends Controller
                 $msg_update = DB::table('msgs')
                                 ->where('id', $value->id)
                                 ->update(array(
+                                    'schedule_at' => null,
                                     'schedule_sent' => 1,
-                                    'created_at' => Carbon::now(),
-                                    'updated_at' => Carbon::now(),
+                                    'created_at' => $value->schedule_at,
+                                    'updated_at' => $value->schedule_at,
                                 ));
             }
         }
-
-        return response()->json($schedule_query);
     }
 }
