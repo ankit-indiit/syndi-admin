@@ -184,9 +184,11 @@ class MessageController extends Controller
     {
         $direction = $request->direction;
 
+        // To be removed after completed
         $msgerror = Msgerror::create([
             'error' => json_encode($request->all()),
         ]);
+        // End
 
         if ($direction == 'inbound') {
             $created_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));

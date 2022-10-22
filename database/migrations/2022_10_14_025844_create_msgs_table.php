@@ -25,8 +25,8 @@ class CreateMsgsTable extends Migration
             $table->string('receiver_name')->nullable();
             $table->text('message')->nullable();
             $table->boolean('read')->default(false);
-            $table->dateTime('schedule')->nullable();
-            $table->dateTime('occurred_at')->nullable();
+            $table->dateTime('schedule_at')->nullable();
+            $table->boolean('schedule_sent')->default(false);
             $table->timestamps();
         });
     }

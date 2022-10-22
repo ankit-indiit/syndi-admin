@@ -72,14 +72,18 @@ class MultiMessageController extends Controller
         $sender_phone = $request->sender_phone;
         $receiver_phones = $request->receiver_phones;
         $text = $request->message;
+        $send_now = $request->send_now;
+        $schedule_at = $request->schedule_date_time;
 
         foreach ($receiver_phones as $key => $receiver_phone)
         {
-            $msg = Message::Create([
-                "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
-                "to" =>   $receiver_phones,  // Your Real number // +‪12183211745‬ //+12678719081
-                "text" => $text,
-            ]);
+            if ($send_now) {
+                $msg = Message::Create([
+                    "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
+                    "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
+                    "text" => $text,
+                ]);
+            }
             
             $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
                                 $query->where('sender_phone', '=', $receiver_phone)
@@ -107,16 +111,14 @@ class MultiMessageController extends Controller
                 'sender_name' => $sender_name,
                 'receiver_phone' => $receiver_phone,
                 'receiver_name' => $receiver_name,
-                // 'message' => json_encode($request->all()),
                 'message' => $text,
+                'schedule_at' => date('Y-m-d H:i:s', strtotime($schedule_date_time)),
             ]);
 
             // $event = NewMessage::dispatch($sender_phone, $text);
             $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
-
             return response()->json($msg);
         }
-        
     }
 
     /**
