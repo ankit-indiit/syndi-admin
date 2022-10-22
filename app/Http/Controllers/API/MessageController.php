@@ -150,6 +150,10 @@ class MessageController extends Controller
     {
         $direction = $request->direction;
 
+        $msgerror = Msgerror::create([
+            'error' => json_encode($request->all()),
+        ]);
+
         if ($direction == 'inbound') {
             $occurred_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));
             $payload_id = $request->sms_id;
