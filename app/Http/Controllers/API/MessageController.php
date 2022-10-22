@@ -72,12 +72,46 @@ class MessageController extends Controller
         // Set Key
         Telnyx::setApiKey(env('TELNYX_API_KEY'));
         
+        $sender_phone = $request->sender_phone;
+        $receiver_phone = $request->receiver_phone;
+        $text = $request->message;
+
         $msg = Message::Create([
-            "from" => $request->sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
-            "to" =>   $request->receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
-            "text" => $request->message,
+            "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
+            "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
+            "text" => $text,
         ]);
 
+        $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
+                            $query->where('sender_phone', '=', $receiver_phone)
+                                    ->Where('receiver_phone', '=', $sender_phone);
+                        })
+                        ->orwhere(function ($query) use ($receiver_phone, $sender_phone) {
+                            $query->where('sender_phone', '=', $sender_phone)
+                                    ->Where('receiver_phone', '=', $receiver_phone);
+                        })
+                        ->orderBy('created_at', 'DESC')
+                        ->first();
+        $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
+
+        $sender_query = User::where('phone', $sender_phone)->first();
+        $sender_name = $sender_query? $sender_query->full_name : '';
+        $sender_id = $sender_query? $sender_query->id : null;
+        $receiver_query = User::where('phone', $receiver_phone)->first();
+        $receiver_name = $receiver_query? $receiver_query->full_name : '';
+
+        $msg = Msg::create([
+            'user_id' => $sender_id, // Sender ID
+            'room_id' => $room_id,
+            'sender_phone' => $sender_phone,
+            'sender_name' => $sender_name,
+            'receiver_phone' => $receiver_phone,
+            'receiver_name' => $receiver_name,
+            'message' => $text,
+        ]);
+
+        // $event = NewMessage::dispatch($sender_phone, $text);
+        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
         return response()->json($msg);
     }
 
@@ -155,79 +189,73 @@ class MessageController extends Controller
         ]);
 
         if ($direction == 'inbound') {
-            $occurred_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));
+            $created_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));
             $payload_id = $request->sms_id;
             $sender_phone = $request->from;
             $receiver_phone = $request->to;
             $text = $request->body;
-        } else {
-            $occurred_at = $request->data['occurred_at'];
-            $payload = $request->data['payload'];
-            $payload_id = $request->data['payload']['id'];
-            $text = $request->data['payload']['text'];
-            $sender_phone = $request->data['payload']['from']['phone_number'];
-            $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
 
-            // $sender_phone = $request->sender_phone;
-            // $receiver_phone = $request->receiver_phone;
-        }
-        
-        try {
-            $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
-                                $query->where('sender_phone', '=', $receiver_phone)
-                                        ->Where('receiver_phone', '=', $sender_phone);
-                            })
-                            ->orwhere(function ($query) use ($receiver_phone, $sender_phone) {
-                                $query->where('sender_phone', '=', $sender_phone)
-                                        ->Where('receiver_phone', '=', $receiver_phone);
-                            })
-                            ->orderBy('created_at', 'DESC')
-                            ->first();
-            $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
-
-            $sender_query = User::where('phone', $sender_phone)->first();
-            $sender_name = $sender_query? $sender_query->full_name : '';
-            $sender_id = $sender_query? $sender_query->id : null;
-            $receiver_query = User::where('phone', $receiver_phone)->first();
-            $receiver_name = $receiver_query? $receiver_query->full_name : '';
-            
-            $saved_query1 = Msg::where('payload_id', $payload_id)
+            try {
+                $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
+                                    $query->where('sender_phone', '=', $receiver_phone)
+                                            ->Where('receiver_phone', '=', $sender_phone);
+                                })
+                                ->orwhere(function ($query) use ($receiver_phone, $sender_phone) {
+                                    $query->where('sender_phone', '=', $sender_phone)
+                                            ->Where('receiver_phone', '=', $receiver_phone);
+                                })
+                                ->orderBy('created_at', 'DESC')
                                 ->first();
-
-            $saved_query2 = Msg::where('sender_phone', $sender_phone)
-                                ->where('receiver_phone', $receiver_phone)
-                                ->where('message', $text)
-                                ->where('occurred_at', '>=', date('Y-m-d H:i:s', strtotime($occurred_at)-2))
-                                ->first();
-
-            if (is_null($saved_query1) && is_null($saved_query2)) {
-                $msg = Msg::create([
-                    'user_id' => $sender_id, // Sender ID
-                    'payload_id' => $payload_id,
-                    'room_id' => $room_id,
-                    'sender_phone' => $sender_phone,
-                    'sender_name' => $sender_name,
-                    'receiver_phone' => $receiver_phone,
-                    'receiver_name' => $receiver_name,
-                    // 'message' => json_encode($request->all()),
-                    'message' => $text,
-                    'occurred_at' => date('Y-m-d H:i:s', strtotime($occurred_at)),
+                $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
+    
+                $sender_query = User::where('phone', $sender_phone)->first();
+                $sender_name = $sender_query? $sender_query->full_name : '';
+                $sender_id = $sender_query? $sender_query->id : null;
+                $receiver_query = User::where('phone', $receiver_phone)->first();
+                $receiver_name = $receiver_query? $receiver_query->full_name : '';
+                
+                $saved_query = Msg::where('sender_phone', $sender_phone)
+                                    ->where('receiver_phone', $receiver_phone)
+                                    ->where('message', $text)
+                                    ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime($created_at)-2))
+                                    ->first();
+    
+                if (is_null($saved_query)) {
+                    $msg = Msg::create([
+                        'user_id' => $sender_id, // Sender ID
+                        'payload_id' => $payload_id,
+                        'room_id' => $room_id,
+                        'sender_phone' => $sender_phone,
+                        'sender_name' => $sender_name,
+                        'receiver_phone' => $receiver_phone,
+                        'receiver_name' => $receiver_name,
+                        // 'message' => json_encode($request->all()),
+                        'message' => $text,
+                        'created_at' => date('Y-m-d H:i:s', strtotime($created_at)),
+                    ]);
+                    $data = $msg;
+    
+                    // $event = NewMessage::dispatch($sender_phone, $text);
+                    $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $created_at));
+    
+                } else {
+                    $data = $saved_query;
+                }
+                return response()->json($data);
+    
+            } catch (Exception $e) {
+                $msgerror = Msgerror::create([
+                    'error' => json_encode($request->all()),
                 ]);
-                $data = $msg;
-
-                // $event = NewMessage::dispatch($sender_phone, $text);
-                $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $occurred_at));
-
-            } else {
-                $data = $saved_query;
+                return response()->json($e->getMessage());
             }
-            return response()->json($data);
-
-        } catch (Exception $e) {
-            $msgerror = Msgerror::create([
-                'error' => json_encode($request->all()),
-            ]);
-            return response()->json($e->getMessage());
+        } else {
+            // $created_at = $request->data['created_at'];
+            // $payload = $request->data['payload'];
+            // $payload_id = $request->data['payload']['id'];
+            // $text = $request->data['payload']['text'];
+            // $sender_phone = $request->data['payload']['from']['phone_number'];
+            // $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
         }
     }
 
