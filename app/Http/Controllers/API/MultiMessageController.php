@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
@@ -178,7 +179,7 @@ class MultiMessageController extends Controller
     public function scheduleMultiMessage()
     {
         Telnyx::setApiKey(env('TELNYX_API_KEY'));
-        
+
         $schedule_query = Msg::where('schedule_at', '!=', null)
                             ->where('schedule_sent', 0)
                             ->get();
