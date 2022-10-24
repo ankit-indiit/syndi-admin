@@ -13,6 +13,7 @@ use Illuminate\Database\QueryException;
 use App\Models\User;
 use App\Models\Msg;
 use App\Models\Msgerror;
+use App\Models\Img;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
@@ -72,14 +73,13 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        // Set Key
-        Telnyx::setApiKey(env('TELNYX_API_KEY'));
-        
         $sender_phone = $request->sender_phone;
         $receiver_phone = $request->receiver_phone;
         $text = $request->message;
         $imageUrls = $request->imageUrls;
-
+        
+        // Set Key
+        Telnyx::setApiKey(env('TELNYX_API_KEY'));
         $msg = Message::Create([
             "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
             "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
@@ -114,17 +114,31 @@ class MessageController extends Controller
             'message' => $text,
         ]);
 
+        $msg_id = $msg->id;
+        foreach ($imageUrls as $key => $url) {
+            $userId = User::where('phone', $sender_phone)->first()->id;
+            $img = Img::create([
+                'user_id' => $userId,
+                'msg_id' => $msg_id,
+                'type' => 'library',
+                'img_url' => $url,
+            ]);
+        }
+
         // $event = NewMessage::dispatch($sender_phone, $text);
         $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
-        return response()->json($msg);
-
-
-        // $userId = User::where('phone', $phone)->first()->id;
-        // $img = Img::create([
-        //     'user_id' => $userId,
-        //     'type' => 'library',
-        //     'img_url' => 'assets/images/library/'.$imageName,
-        // ]);
+        
+        return response()->json([
+            'user_id' => $sender_id, // Sender ID
+            'room_id' => $room_id,
+            'sender_phone' => $sender_phone,
+            'sender_name' => $sender_name,
+            'receiver_phone' => $receiver_phone,
+            'receiver_name' => $receiver_name,
+            'message' => $text,
+            'imgs' => $imageUrls,
+        ]);
+        
     }
 
     /**

@@ -13,6 +13,7 @@ use Illuminate\Database\QueryException;
 use App\Models\User;
 use App\Models\Msg;
 use App\Models\Msgerror;
+use App\Models\Img;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
