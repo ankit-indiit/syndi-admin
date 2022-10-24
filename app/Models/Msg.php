@@ -11,10 +11,14 @@ class Msg extends Model
 
     protected $fillable = [
         'user_id', 'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 
-        'message','read', 'schedule_at', 'schedule_sent', 'created_at', 'updated_at',
+        'message', 'emoji', 'read', 'schedule_at', 'schedule_sent', 'created_at', 'updated_at',
     ];
 
-    public function user() {
+    public function user(){
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function img(){
+        return $this->hasMany(Img::class);
     }
 }

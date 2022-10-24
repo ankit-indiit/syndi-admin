@@ -24,6 +24,7 @@ class CreateMsgsTable extends Migration
             $table->string('receiver_phone')->nullable();
             $table->string('receiver_name')->nullable();
             $table->text('message')->nullable();
+            $table->text('emoji')->nullable();
             $table->boolean('read')->default(false);
             $table->dateTime('schedule_at')->nullable();
             $table->boolean('schedule_sent')->default(false);
