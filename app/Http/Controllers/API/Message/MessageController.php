@@ -151,7 +151,9 @@ class MessageController extends Controller
     {
         $user_phone = Auth::user()->phone;
         $receiver_phone = $id;
-        $messages = Msg::where(function ($query) use ($user_phone) {
+        $messages = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])->where(function ($query) use ($user_phone) {
                             $query->where('sender_phone', '=', $user_phone)
                                     ->orWhere('receiver_phone', '=', $user_phone);
                         })
@@ -160,11 +162,11 @@ class MessageController extends Controller
                                     ->orWhere('receiver_phone', '=', $receiver_phone);
                         })
                         ->where('schedule_at', null)
-                        ->select('sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->get();
-
-        return response()->json($messages);
+        
+        $message_array = $this->getMessageDetails($messages);
+        return response()->json($message_array);
     }
 
     /**
@@ -350,6 +352,35 @@ class MessageController extends Controller
                 $sub_arr['message'] = $sort_array[0]['message'];
                 $sub_arr['created_at'] = $sort_array[0]['created_at'];
                 $sub_arr['imgs'] = $img_arr;
+            }
+            array_push($messages_array, $sub_arr);
+        }
+        return $messages_array;
+    }
+
+    /**
+     * Messages List Array Get Function.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function getMessageDetails($messages)
+    {
+        $messages_array = array();
+        foreach ($messages as $key => $message_arr)
+        {
+            $sub_arr = [];
+            $sub_arr['sender_phone'] = $message_arr->sender_phone;
+            $sub_arr['sender_name'] = $message_arr->sender_name;
+            $sub_arr['receiver_phone'] = $message_arr->receiver_phone;
+            $sub_arr['receiver_name'] = $message_arr->receiver_name;
+            $sub_arr['message'] = $message_arr->message;
+            $sub_arr['created_at'] = $message_arr->created_at;
+            $sub_arr['imgs'] = [];
+
+            foreach ($message_arr->img as $key => $image)
+            {
+                array_push($sub_arr['imgs'], $image->img_url);
             }
             array_push($messages_array, $sub_arr);
         }
