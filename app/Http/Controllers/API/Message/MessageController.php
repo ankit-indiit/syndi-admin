@@ -126,7 +126,7 @@ class MessageController extends Controller
         }
 
         // $event = NewMessage::dispatch($sender_phone, $text);
-        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
+        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at, $imageUrls));
         
         return response()->json([
             'user_id' => $sender_id, // Sender ID
@@ -267,7 +267,7 @@ class MessageController extends Controller
                     $data = $msg;
     
                     // $event = NewMessage::dispatch($sender_phone, $text);
-                    $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $created_at));
+                    $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $created_at, []));
     
                 } else {
                     $data = $saved_query;
@@ -298,8 +298,9 @@ class MessageController extends Controller
         $receiver_name = $request->receiver_name;
         $message = $request->message;
         $created_at = $request->created_at;
+        $imageUrls = $request->imageUrls;
 
-        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at));
+        $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at, $imageUrls));
         // $event = event(new NewMessage($sender_phone, $text));
         // $event = broadcast(new NewMessage($sender_phone, $text));
         // broadcast(new NewMessage($sender_phone, $text))->toOthers();
@@ -311,7 +312,8 @@ class MessageController extends Controller
                 'receiver_phone' => $receiver_phone,
                 'receiver_name' => $receiver_name,
                 'message' => $message,
-                'created_at' => $created_at
+                'created_at' => $created_at,
+                'imgs' => $imageUrls,
             ]
         );
     }

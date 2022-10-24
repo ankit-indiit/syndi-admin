@@ -22,13 +22,14 @@ class NewMessage implements ShouldBroadcast
     public $receiver_name;
     public $message;
     public $created_at;
+    public $imageUrls;
 
     /**
      * Create a new event instance.
      *
      * @return void
      */
-    public function __construct($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at)
+    public function __construct($sender_phone, $sender_name, $receiver_phone, $receiver_name, $message, $created_at, $imageUrls)
     {
         $this->sender_phone = $sender_phone;
         $this->sender_name = $sender_name;
@@ -36,6 +37,7 @@ class NewMessage implements ShouldBroadcast
         $this->receiver_name = $receiver_name;
         $this->message = $message;
         $this->created_at = $created_at;
+        $this->imageUrls = $imageUrls;
     }
 
     /**
@@ -58,6 +60,7 @@ class NewMessage implements ShouldBroadcast
             'receiver_name' => $this->receiver_name,
             'message' => $this->message,
             'created_at' => $this->created_at,
+            'imgs' => $this->imageUrls,
         ];
     }
 
