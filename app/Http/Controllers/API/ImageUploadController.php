@@ -50,11 +50,6 @@ class ImageUploadController extends Controller
      */
     public function store(Request $request)
     {
-        $phone = $request->phone;
-        $request->validate([
-            'phone' => 'required|string|max:20|exists:users',
-        ]);
-
         $status = '';
         $message = '';
         $data = '';
@@ -76,12 +71,6 @@ class ImageUploadController extends Controller
                 $status = 'error';
                 $message = 'mkdir() no such file or directory';
             } else {
-                // $userId = User::where('phone', $phone)->first()->id;
-                // $img = Img::create([
-                //     'user_id' => $userId,
-                //     'type' => 'library',
-                //     'img_url' => 'assets/images/library/'.$imageName,
-                // ]);
                 $status = 'success';
                 $message = 'Successfully uploaded an image.';
                 $data = ['img_url' => 'assets/images/library/'.$imageName];

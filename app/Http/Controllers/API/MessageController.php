@@ -114,6 +114,14 @@ class MessageController extends Controller
         // $event = NewMessage::dispatch($sender_phone, $text);
         $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
         return response()->json($msg);
+
+
+        // $userId = User::where('phone', $phone)->first()->id;
+        // $img = Img::create([
+        //     'user_id' => $userId,
+        //     'type' => 'library',
+        //     'img_url' => 'assets/images/library/'.$imageName,
+        // ]);
     }
 
     /**
