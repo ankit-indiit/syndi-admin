@@ -38,12 +38,14 @@ class MessageController extends Controller
         // $token1 = $request->header('Authorization');
 
         $user_phone = Auth::user()->phone;
-        $messages = Msg::where(function ($query) use ($user_phone) {
+        $messages = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])
+                        ->where(function ($query) use ($user_phone) {
                             $query->where('sender_phone', '=', $user_phone)
                                     ->orWhere('receiver_phone', '=', $user_phone);
                         })
                         ->where('schedule_at', null)
-                        ->select('room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 'message', 'created_at')
                         ->orderBy('created_at', 'DESC')
                         ->get()
                         ->groupBy('room_id');
@@ -76,6 +78,7 @@ class MessageController extends Controller
         $sender_phone = $request->sender_phone;
         $receiver_phone = $request->receiver_phone;
         $text = $request->message;
+        $imageUrls = $request->imageUrls;
 
         $msg = Message::Create([
             "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
@@ -320,13 +323,19 @@ class MessageController extends Controller
             $sub_arr['message'] = '';
             $sub_arr['created_at'] = '';
 
-            if (!is_null($sort_array[0])) {
+            if (!is_null($sort_array[0]))
+            {
+                $img_arr = [];
+                foreach ($sort_array[0]['img'] as $key => $img) {
+                    array_push($img_arr, $img['img_url']);
+                }
                 $sub_arr['sender_phone'] = $sort_array[0]['sender_phone'];
                 $sub_arr['sender_name'] = $sort_array[0]['sender_name'];
                 $sub_arr['receiver_phone'] = $sort_array[0]['receiver_phone'];
                 $sub_arr['receiver_name'] = $sort_array[0]['receiver_name'];
                 $sub_arr['message'] = $sort_array[0]['message'];
                 $sub_arr['created_at'] = $sort_array[0]['created_at'];
+                $sub_arr['imgs'] = $img_arr;
             }
             array_push($messages_array, $sub_arr);
         }
