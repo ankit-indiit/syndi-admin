@@ -25,7 +25,6 @@ class UserSeeder extends Seeder
             'company'  => '',
             'phone'  => '+15056369512',
             'timezone'  => '',
-            'role'  => 1,
             'password' => Hash::make('123123'),
             'dpassword'  => '123123',
         ]);
@@ -43,12 +42,13 @@ class UserSeeder extends Seeder
         User::create([
             'account_id'      => '',
             'full_name'     => 'Test User',
-            'email'  => 'test@gmail.com',
+            'email'  => 'joshcooldev@gmail.com',
+            'role'  => 1,
             'company'  => '',
             'phone'  => '+15512094584',
             'timezone'  => '',
-            'password' => Hash::make('12345678'),
-            'dpassword'  => '12345678',
+            'password' => Hash::make('admin123@'),
+            'dpassword'  => 'admin123@',
         ]);
         User::create([
             'account_id'      => '',
