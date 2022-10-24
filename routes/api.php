@@ -31,6 +31,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('msg', MessageController::class);
     Route::resource('multi-msg', MultiMessageController::class);
     Route::resource('img-upload', Admin\ImageUploadController::class);
+    Route::resource('img-url', ImageUploadController::class);
 });
 
 

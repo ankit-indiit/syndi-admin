@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\API\Admin;
+namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -19,7 +19,6 @@ use Image;
 use App\Models\User;
 use App\Models\Msg;
 use App\Models\Img;
-
 
 class ImageUploadController extends Controller
 {
@@ -55,47 +54,43 @@ class ImageUploadController extends Controller
         $request->validate([
             'phone' => 'required|string|max:20|exists:users',
         ]);
-        $userRole = User::where('phone', $phone)->first()->role;
 
         $status = '';
         $message = '';
         $data = '';
 
-        if ($userRole == 1)
-        {
-            $image = $request->newImage;
-            $imageName = '';
-            $name = time();
+        $image = $request->newImage;
+        $imageName = '';
+        $name = time();
 
-            if(!is_null($image)) {
-                $request->validate([
-                    'newImage' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10000'
-                ]);
-                $imageName = $this->saveImage($name, $image, $userRole);
+        if(!is_null($image)) {
+            $request->validate([
+                'newImage' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10000'
+            ]);
+            $imageName = $this->saveImage($name, $image);
 
-                if ($imageName == 0) {
-                    $status = 'error';
-                    $message = 'Not valid file write permission.';
-                } elseif ($imageName == 1) {
-                    $status = 'error';
-                    $message = 'mkdir() no such file or directory';
-                } else {
-                    $img = Img::create([
-                        'type' => 'free',
-                        'img_url' => 'assets/images/free/'.$imageName,
-                    ]);
-                    $status = 'success';
-                    $message = 'Successfully uploaded an image.';
-                    $data = $img;
-                }
+            if ($imageName == 0) {
+                $status = 'error';
+                $message = 'Not valid file write permission.';
+            } elseif ($imageName == 1) {
+                $status = 'error';
+                $message = 'mkdir() no such file or directory';
             } else {
-                $status = 'warning';
-                $message = 'Please select an image.';
+                // $userId = User::where('phone', $phone)->first()->id;
+                // $img = Img::create([
+                //     'user_id' => $userId,
+                //     'type' => 'library',
+                //     'img_url' => 'assets/images/library/'.$imageName,
+                // ]);
+                $status = 'success';
+                $message = 'Successfully uploaded an image.';
+                $data = ['img_url' => 'assets/images/library/'.$imageName];
             }
         } else {
             $status = 'warning';
-            $message = 'Not valid user permission.';
+            $message = 'Please select an image.';
         }
+        
         return response()->json([
             'status' => $status,
             'message' => $message,
@@ -154,11 +149,11 @@ class ImageUploadController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    protected function saveImage($name, $image, $userRole)
+    protected function saveImage($name, $image)
     {
         try {
             $imageName = $name.'.'.$image->extension();
-            $destinationPath = $userRole == 1? public_path('assets/images/free') : public_path('assets/images/library');
+            $destinationPath = public_path('assets/images/library');
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
