@@ -28,17 +28,17 @@ Route::resource('/reset-password', Auth\ResetController::class);
 Route::middleware('auth:api')->group(function () {
     // Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
     Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
-    Route::resource('msg', MessageController::class);
-    Route::resource('multi-msg', MultiMessageController::class);
+    Route::resource('msg', Message\MessageController::class);
+    Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-upload', Admin\ImageUploadController::class);
-    Route::resource('img-url', ImageUploadController::class);
+    Route::resource('img-url', Message\ImageUploadController::class);
 });
 
 
 // Test API
-Route::post('/webhook', [App\Http\Controllers\API\MessageController::class, 'webhook']);
-Route::post('/pushser', [App\Http\Controllers\API\MessageController::class, 'messagePusher']);
-Route::get('/cron', [App\Http\Controllers\API\MultiMessageController::class, 'scheduleMultiMessage']);
+Route::post('/webhook', [App\Http\Controllers\API\Message\MessageController::class, 'webhook']);
+Route::post('/pushser', [App\Http\Controllers\API\Message\MessageController::class, 'messagePusher']);
+Route::get('/cron', [App\Http\Controllers\API\Message\MultiMessageController::class, 'scheduleMultiMessage']);
 
 
 
