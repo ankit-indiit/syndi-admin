@@ -32,6 +32,8 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-upload', Admin\ImageUploadController::class);
     Route::resource('img-url', Message\ImageUploadController::class);
+    Route::get('library-img',[App\Http\Controllers\API\Message\ImageUploadController::class, 'getLibraryImageUrl']);
+    Route::get('free-img',[App\Http\Controllers\API\Message\ImageUploadController::class, 'getFreeImageUrl']);
 });
 
 

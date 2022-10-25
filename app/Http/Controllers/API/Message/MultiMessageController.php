@@ -76,14 +76,16 @@ class MultiMessageController extends Controller
         $text = $request->message;
         $send_now = $request->send_now;
         $schedule_at = $request->schedule_at;
+        $imageUrls = $request->imageUrls;
         
         foreach ($receiver_phones as $key => $receiver_phone)
         {
             if ($send_now) {
                 $msg = Message::Create([
-                    "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
+                    "from" => $sender_phone, // Your Telnyx number //+15512094584 //+13017860317 //+14052672456
                     "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
                     "text" => $text,
+                    'media_urls' => $imageUrls
                 ]);
             }
             

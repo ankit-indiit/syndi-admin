@@ -82,7 +82,7 @@ class ImageUploadController extends Controller
                 } else {
                     $img = Img::create([
                         'type' => 'free',
-                        'img_url' => 'assets/images/free/'.$imageName,
+                        'img_url' => env('APP_API_SERVER_URL').'/assets/images/free/'.$imageName,
                     ]);
                     $status = 'success';
                     $message = 'Successfully uploaded an image.';
