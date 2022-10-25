@@ -265,8 +265,8 @@ class ImageUploadController extends Controller
     protected function deleteImage($path)
     {
         if (!is_null($path) && $path != '') {
-            File::delete(public_path($path));
-            // File::delete($path);
+            $sub_path = explode(env('APP_API_SERVER_URL'), $path)[1];
+            File::delete(public_path($sub_path));
         }
     }
 
@@ -281,12 +281,9 @@ class ImageUploadController extends Controller
         $path = 'https://api.syndicatesms.com/assets/images/library/1666722918.png';
         $sub_path = explode(env('APP_API_SERVER_URL'), $path)[1];
 
-        // dd($sub_path, public_path($sub_path));
-
-        File::delete(public_path($sub_path));
-        // if (!is_null($path) && $path != '') {
-        //     File::delete($path);
-        // }
+        if (!is_null($sub_path) && $sub_path != '') {
+            File::delete(public_path($sub_path));
+        }
         return response()->json('ok');
     }
 }
