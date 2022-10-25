@@ -116,6 +116,7 @@ class MessageController extends Controller
             'message' => $text,
         ]);
 
+        // Image URL Store
         $msg_id = $msg->id;
         foreach ($imageUrls as $key => $url) {
             $userId = User::where('phone', $sender_phone)->first()->id;

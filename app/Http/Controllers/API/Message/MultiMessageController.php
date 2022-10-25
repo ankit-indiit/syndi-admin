@@ -119,9 +119,32 @@ class MultiMessageController extends Controller
                 'schedule_at' => $send_now? null: date('Y-m-d H:i:s', strtotime($schedule_at)),
             ]);
 
+            // Image URL Store
+            $msg_id = $msg->id;
+            foreach ($imageUrls as $key => $url) {
+                $userId = User::where('phone', $sender_phone)->first()->id;
+                $img = Img::create([
+                    'user_id' => $userId,
+                    'msg_id' => $msg_id,
+                    'type' => 'library',
+                    'img_url' => $url,
+                ]);
+            }
+
             // $event = NewMessage::dispatch($sender_phone, $text);
-            $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at));
-            array_push($msg_arr, $msg);
+            $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at, $imageUrls));
+            array_push($msg_arr, 
+                [
+                    'user_id' => $sender_id, // Sender ID
+                    'room_id' => $room_id,
+                    'sender_phone' => $sender_phone,
+                    'sender_name' => $sender_name,
+                    'receiver_phone' => $receiver_phone,
+                    'receiver_name' => $receiver_name,
+                    'message' => $text,
+                    'imgs' => $imageUrls,
+                ]
+            );
         }
         return response()->json($msg_arr);
     }
@@ -183,7 +206,9 @@ class MultiMessageController extends Controller
     {
         Telnyx::setApiKey(env('TELNYX_API_KEY'));
 
-        $schedule_query = Msg::where('schedule_at', '!=', null)
+        $schedule_query = Msg::with(['img' => function ($query) {
+                                $query->select('msg_id', 'img_url');
+                            }])->where('schedule_at', '!=', null)
                             ->where('schedule_sent', 0)
                             ->get();
 
@@ -192,12 +217,19 @@ class MultiMessageController extends Controller
             $current_time = Carbon::now()->timestamp;
             $schedule_at = strtotime($value->schedule_at);
 
+            $imageUrls = [];
+            foreach ($value->img as $key => $image)
+            {
+                array_push($imageUrls, $image->img_url);
+            }
+
             if ($schedule_at != 0 && $current_time >= $schedule_at)
             {
                 $msg = Message::Create([
                     "from" => $value->sender_phone,
                     "to" =>   $value->receiver_phone,
                     "text" => $value->message,
+                    'media_urls' => $imageUrls
                 ]);
 
                 $msg_update = DB::table('msgs')
