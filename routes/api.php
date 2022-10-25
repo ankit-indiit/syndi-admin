@@ -41,7 +41,7 @@ Route::middleware('auth:api')->group(function () {
 Route::post('/webhook', [App\Http\Controllers\API\Message\MessageController::class, 'webhook']);
 Route::post('/pushser', [App\Http\Controllers\API\Message\MessageController::class, 'messagePusher']);
 Route::get('/cron', [App\Http\Controllers\API\Message\MultiMessageController::class, 'scheduleMultiMessage']);
-
+Route::get('/remove',[App\Http\Controllers\API\Message\ImageUploadController::class, 'deleteStorageImage']);
 
 
 // // Products
