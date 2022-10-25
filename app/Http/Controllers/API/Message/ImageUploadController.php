@@ -105,7 +105,25 @@ class ImageUploadController extends Controller
      */
     public function show($id)
     {
-        //
+        if ($id == "library") {
+            $user_id = Auth::user()->id;
+            $image_urls = array();
+            $image_query = Img::where('user_id', $user_id)
+                                ->where('type', $id)
+                                ->orderBy('created_at', 'DESC')
+                                ->get();
+        } else {
+            $image_urls = array();
+            $image_query = Img::where('type', $id)
+                                ->orderBy('created_at', 'DESC')
+                                ->get();
+        }
+
+        foreach ($image_query as $key => $image)
+        {
+            array_push($image_urls, $image->img_url);
+        }
+        return response()->json($image_urls);
     }
 
     /**
@@ -128,51 +146,45 @@ class ImageUploadController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        // $image = DB::table('imgs')->where('img_url', $id)->first();
+            dd($image, $id, $request->all());
     }
 
     /**
      * Remove the specified resource from storage.
      *
+     * @return \Illuminate\Http\Response
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
+        $img_url = $request->img_url;
         if (Auth::check()) {
-
-            $image = DB::table('imgs')->where('img_url', $id)->first();
-
             try {
-                $this->deleteOldImage($inventory->image1);
+                $this->deleteImage($img_url);
             } catch (QueryException $e) {
-                // $errorMsg = 'Something went wrong on the Storage side for inventory removal.';
-                $errorMsg = '库存删除时出现存储问题。';
+                $errorMsg = 'Something went wrong on the Storage side for Image removal.';
             }
-
             try {
-                Inventory::destroy($id);
-                // $successMsg = 'Successfully deleted the inventory selected.';
-                // Session::flash('success', 'Successfully deleted the inventory selected.');
-
-                $successMsg = '已成功删除所选的库存。';
-                Session::flash('success', '已成功删除所选的库存。');
+                $image = DB::table('imgs')->where('img_url', $img_url)->delete();
 
             } catch (QueryException $e) {
-                // $errorMsg = 'Something went wrong on the Inventory Database side.';
-                $errorMsg = '库存数据库出了点问题。';
+                $errorMsg = 'Something went wrong on the Img Database side.';
             }
 
             return response()->json([
-                'successMsg' => $successMsg,
-                'warningMsg' => $warningMsg,
-                'errorMsg' => $errorMsg
+                'status' => 'success',
+                'message' => 'Image deleted successfully',
+                'data' => [
+                    'img_url' => $img_url,
+                ]
             ]);
 
         } else {
             return response()->json([
-                // 'warningMsg' => 'Invalid user permission.'
-                'warningMsg' => '用户权限无效。'
+                'status' => 'error',
+                'message' => 'Unauthorized user'
             ]);
         }
     }
@@ -242,5 +254,19 @@ class ImageUploadController extends Controller
             array_push($free_image_urls, $image->img_url);
         }
         return response()->json($free_image_urls);
+    }
+
+    /**
+     * deleteImage function in Inventory page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function deleteImage($path)
+    {
+        if (!is_null($path) && $path != '') {
+            // File::delete(public_path($path));
+            File::delete($path);
+        }
     }
 }
