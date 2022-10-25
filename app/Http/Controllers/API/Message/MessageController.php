@@ -120,12 +120,21 @@ class MessageController extends Controller
         $msg_id = $msg->id;
         foreach ($imageUrls as $key => $url) {
             $userId = User::where('phone', $sender_phone)->first()->id;
-            $img = Img::create([
-                'user_id' => $userId,
-                'msg_id' => $msg_id,
-                'type' => 'library',
-                'img_url' => $url,
-            ]);
+            $img_query = Img::where('user_id', $userId)
+                            ->where('img_url', $url)
+                            ->first();
+            if (is_null($img_query)) {
+                $img = Img::create([
+                    'user_id' => $userId,
+                    'msg_id' => $msg_id,
+                    'type' => 'library',
+                    'img_url' => $url,
+                ]);
+            } else {
+                $query_update = Img::where('user_id', $userId)
+                                    ->where('img_url', $url)
+                                    ->update(array('msg_id' => $msg_id));
+            }
         }
 
         // $event = NewMessage::dispatch($sender_phone, $text);

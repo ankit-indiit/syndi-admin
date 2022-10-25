@@ -50,6 +50,12 @@ class ImageUploadController extends Controller
      */
     public function store(Request $request)
     {
+        $phone = $request->phone;
+        $request->validate([
+            'phone' => 'required|string|max:20|exists:users',
+        ]);
+        $user_id = User::where('phone', $phone)->first()->id;
+
         $status = '';
         $message = '';
         $data = '';
@@ -73,7 +79,11 @@ class ImageUploadController extends Controller
             } else {
                 $status = 'success';
                 $message = 'Successfully uploaded an image.';
-                $data = ['img_url' => env('APP_API_SERVER_URL').'/assets/images/library/'.$imageName];
+                $data = Img::create([
+                    'user_id' => $user_id,
+                    'type' => 'library',
+                    'img_url' => env('APP_API_SERVER_URL').'/assets/images/library/'.$imageName,
+                ]);
             }
         } else {
             $status = 'warning';
@@ -129,7 +139,42 @@ class ImageUploadController extends Controller
      */
     public function destroy($id)
     {
-        //
+        if (Auth::check()) {
+
+            $image = DB::table('imgs')->where('img_url', $id)->first();
+
+            try {
+                $this->deleteOldImage($inventory->image1);
+            } catch (QueryException $e) {
+                // $errorMsg = 'Something went wrong on the Storage side for inventory removal.';
+                $errorMsg = '库存删除时出现存储问题。';
+            }
+
+            try {
+                Inventory::destroy($id);
+                // $successMsg = 'Successfully deleted the inventory selected.';
+                // Session::flash('success', 'Successfully deleted the inventory selected.');
+
+                $successMsg = '已成功删除所选的库存。';
+                Session::flash('success', '已成功删除所选的库存。');
+
+            } catch (QueryException $e) {
+                // $errorMsg = 'Something went wrong on the Inventory Database side.';
+                $errorMsg = '库存数据库出了点问题。';
+            }
+
+            return response()->json([
+                'successMsg' => $successMsg,
+                'warningMsg' => $warningMsg,
+                'errorMsg' => $errorMsg
+            ]);
+
+        } else {
+            return response()->json([
+                // 'warningMsg' => 'Invalid user permission.'
+                'warningMsg' => '用户权限无效。'
+            ]);
+        }
     }
 
     /**

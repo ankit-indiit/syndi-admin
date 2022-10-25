@@ -80,13 +80,12 @@ class ImageUploadController extends Controller
                     $status = 'error';
                     $message = 'mkdir() no such file or directory';
                 } else {
-                    $img = Img::create([
+                    $data = Img::create([
                         'type' => 'free',
                         'img_url' => env('APP_API_SERVER_URL').'/assets/images/free/'.$imageName,
                     ]);
                     $status = 'success';
                     $message = 'Successfully uploaded an image.';
-                    $data = $img;
                 }
             } else {
                 $status = 'warning';
