@@ -26,14 +26,12 @@ Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'st
 Route::resource('/reset-password', Auth\ResetController::class);
 
 Route::middleware('auth:api')->group(function () {
-    // Route::post('/msg', [App\Http\Controllers\API\MessageController::class, 'store']);
     Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
     Route::resource('msg', Message\MessageController::class);
     Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-upload', Admin\ImageUploadController::class);
     Route::resource('img-url', Message\ImageUploadController::class);
     Route::post('img-delete',[App\Http\Controllers\API\Message\ImageUploadController::class, 'destroy']);
-    // Route::get('free-img',[App\Http\Controllers\API\Message\ImageUploadController::class, 'getFreeImageUrl']);
 });
 
 
@@ -45,10 +43,9 @@ Route::get('/remove',[App\Http\Controllers\API\Message\ImageUploadController::cl
 
 
 // // Products
-// Route::get('/Products', [App\Http\Controllers\API\ProductsController::class, 'products']);
 // Route::get('/Products/{manufacturerPartNo}', [App\Http\Controllers\API\ProductsController::class, 'productsByManufacturerPartNo']);
-// // Route::get('/Products/ByName', [App\Http\Controllers\API\ProductsController::class, 'productsByName']);
-// // Route::get('/Products/{$year}/{$make}/{$model}', [App\Http\Controllers\API\ProductsController::class, 'products']);
+// Route::get('/Products/ByName', [App\Http\Controllers\API\ProductsController::class, 'productsByName']);
+// Route::get('/Products/{$year}/{$make}/{$model}', [App\Http\Controllers\API\ProductsController::class, 'products']);
 
 Route::get('/token', function () {
     return csrf_token(); 

@@ -146,8 +146,7 @@ class ImageUploadController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $image = DB::table('imgs')->where('img_url', $id)->first();
-            dd($image, $id, $request->all());
+        //
     }
 
     /**
@@ -168,11 +167,9 @@ class ImageUploadController extends Controller
             }
             try {
                 $image = DB::table('imgs')->where('img_url', $img_url)->delete();
-
             } catch (QueryException $e) {
                 $errorMsg = 'Something went wrong on the Img Database side.';
             }
-
             return response()->json([
                 'status' => 'success',
                 'message' => 'Image deleted successfully',
@@ -180,7 +177,6 @@ class ImageUploadController extends Controller
                     'img_url' => $img_url,
                 ]
             ]);
-
         } else {
             return response()->json([
                 'status' => 'error',
@@ -214,46 +210,6 @@ class ImageUploadController extends Controller
         } catch (Exception $e) {
             return 1;
         }
-    }
-
-    /**
-     * Display Library Image URLS for each user.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getLibraryImageUrl()
-    {
-        $user_id = Auth::user()->id;
-        $lib_image_urls = array();
-        $image_query = Img::where('user_id', $user_id)
-                            ->where('type', 'library')
-                            ->orderBy('created_at', 'DESC')
-                            ->get();
-
-        foreach ($image_query as $key => $image)
-        {
-            array_push($lib_image_urls, $image->img_url);
-        }
-        return response()->json($lib_image_urls);
-    }
-
-    /**
-     * Display Free Image URLS From Admin.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function getFreeImageUrl()
-    {
-        $free_image_urls = array();
-        $image_query = Img::where('type', 'free')
-                            ->orderBy('created_at', 'DESC')
-                            ->get();
-
-        foreach ($image_query as $key => $image)
-        {
-            array_push($free_image_urls, $image->img_url);
-        }
-        return response()->json($free_image_urls);
     }
 
     /**
