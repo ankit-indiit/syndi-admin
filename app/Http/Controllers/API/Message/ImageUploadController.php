@@ -60,7 +60,7 @@ class ImageUploadController extends Controller
 
         if(!is_null($image)) {
             $request->validate([
-                'newImage' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10000'
+                'newImage' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:10000'
             ]);
             $imageName = $this->saveImage($name, $image);
 
@@ -73,7 +73,7 @@ class ImageUploadController extends Controller
             } else {
                 $status = 'success';
                 $message = 'Successfully uploaded an image.';
-                $data = ['img_url' => 'assets/images/library/'.$imageName];
+                $data = ['img_url' => env('APP_API_SERVER_URL').'/assets/images/library/'.$imageName];
             }
         } else {
             $status = 'warning';

@@ -64,7 +64,7 @@ class RegisterController extends Controller
     public function store(Request $request)
     {
         // Set Key
-        Telnyx::setApiKey('KEY0183800AD4BCF4F52D37A672CC21A352_LKYn5P2nthQTyIs7t8xuQu');
+        Telnyx::setApiKey(env('TELNYX_API_KEY'));
 
         // $user_phone = '+15056369512';
         $user_phone = $request->phone;
@@ -106,7 +106,7 @@ class RegisterController extends Controller
                                     ],
             "webhook_api_version" => "2",
             "webhook_failover_url" => "",
-            "webhook_url" => "http://3.137.108.96/webhook"
+            "webhook_url" => env('APP_API_SERVER_URL')."/webhook"
         ]);
         $msg_profile_id = $new_message_profile->id;
 
@@ -116,7 +116,7 @@ class RegisterController extends Controller
         //                             [   
         //                                 "webhook_api_version" => "2",
         //                                 "webhook_failover_url" => "",
-        //                                 "webhook_url" => "http://3.137.108.96/webhook"
+        //                                 "webhook_url" => "https://api.syndicatesms.com/webhook"
         //                             ]);
 
 

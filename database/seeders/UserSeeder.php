@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
         ]);
         User::create([
             'account_id'      => '',
-            'full_name'     => 'Test User',
+            'full_name'     => 'super admin',
             'email'  => 'joshcooldev@gmail.com',
             'role'  => 1,
             'company'  => '',

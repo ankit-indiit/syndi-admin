@@ -84,6 +84,8 @@ class MessageController extends Controller
             "from" => $sender_phone, // Your Telnyx number //+12017789154 //+13017860317 //+14052672456
             "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
             "text" => $text,
+            // 'subject' => 'Picture',
+            'media_urls' => $imageUrls
         ]);
 
         $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
