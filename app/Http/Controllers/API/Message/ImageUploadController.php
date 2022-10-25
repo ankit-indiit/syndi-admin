@@ -281,7 +281,7 @@ class ImageUploadController extends Controller
         $path = 'https://api.syndicatesms.com/assets/images/library/1666722918.png';
         $sub_path = explode(env('APP_API_SERVER_URL'), $path)[1];
 
-        dd($sub_path, public_path($sub_path));
+        // dd($sub_path, public_path($sub_path));
 
         File::delete(public_path($sub_path));
         // if (!is_null($path) && $path != '') {
