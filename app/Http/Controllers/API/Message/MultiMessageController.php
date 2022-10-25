@@ -252,6 +252,13 @@ class MultiMessageController extends Controller
                                     'updated_at' => $value->schedule_at,
                                 ));
             }
+
+            $sender_phone = $value->sender_phone;
+            $sender_name = $value->sender_name;
+            $receiver_phone = $value->receiver_phone;
+            $receiver_name = $value->receiver_name;
+
+            $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at, $imageUrls));
         }
     }
 }
