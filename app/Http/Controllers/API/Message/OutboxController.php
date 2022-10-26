@@ -132,8 +132,50 @@ class OutboxController extends Controller
         //
     }
 
-     /**
+    /**
      * Messages List Array Get Function.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function getLastMessages($messages)
+    {
+        $messages_array = array();
+        foreach ($messages as $key => $message_arr)
+        {
+            $sort_array = $message_arr->toArray();
+            usort($sort_array, function($first, $second) {
+                return $first['created_at'] < $second['created_at'];
+            });
+            $sub_arr = [];
+            $sub_arr['sender_phone'] = '';
+            $sub_arr['sender_name'] = '';
+            $sub_arr['receiver_phone'] = '';
+            $sub_arr['receiver_name'] = '';
+            $sub_arr['message'] = '';
+            $sub_arr['created_at'] = '';
+
+            if (!is_null($sort_array[0]))
+            {
+                $img_arr = [];
+                foreach ($sort_array[0]['img'] as $key => $img) {
+                    array_push($img_arr, $img['img_url']);
+                }
+                $sub_arr['sender_phone'] = $sort_array[0]['sender_phone'];
+                $sub_arr['sender_name'] = $sort_array[0]['sender_name'];
+                $sub_arr['receiver_phone'] = $sort_array[0]['receiver_phone'];
+                $sub_arr['receiver_name'] = $sort_array[0]['receiver_name'];
+                $sub_arr['message'] = $sort_array[0]['message'];
+                $sub_arr['created_at'] = $sort_array[0]['created_at'];
+                $sub_arr['imgs'] = $img_arr;
+            }
+            array_push($messages_array, $sub_arr);
+        }
+        return $messages_array;
+    }
+    
+     /**
+     * Schedule List Array Get Function.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
