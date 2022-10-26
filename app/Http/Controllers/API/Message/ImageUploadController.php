@@ -186,7 +186,7 @@ class ImageUploadController extends Controller
     }
 
     /**
-     * Save Image function in Inventory page.
+     * Save Image function in Library & Free Folder.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -213,7 +213,7 @@ class ImageUploadController extends Controller
     }
 
     /**
-     * deleteImage function in Inventory page.
+     * deleteImage function in Library and Free folder.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -227,7 +227,7 @@ class ImageUploadController extends Controller
     }
 
     /**
-     * deleteImage function in Inventory page.
+     * Public test deleteImage function in Library and Free folder.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
