@@ -112,11 +112,16 @@ class ImageUploadController extends Controller
                                 ->where('type', $id)
                                 ->orderBy('created_at', 'DESC')
                                 ->get();
-        } else {
+        } elseif ($id == "free") {
             $image_urls = array();
             $image_query = Img::where('type', $id)
                                 ->orderBy('created_at', 'DESC')
                                 ->get();
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Not valid url. Please input a correct url',
+            ]);    
         }
 
         foreach ($image_query as $key => $image)

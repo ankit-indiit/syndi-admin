@@ -73,22 +73,29 @@ class OutboxController extends Controller
      */
     public function show($id)
     {
-        $user_phone = Auth::user()->phone;
-        $schedules = Msg::with(['img' => function ($query) {
-                            $query->select('msg_id', 'img_url');
-                        }])
-                        ->where(function ($query) use ($user_phone) {
-                            $query->where('sender_phone', '=', $user_phone);
-                                    // ->orWhere('receiver_phone', '=', $user_phone);
-                        })
-                        ->where('schedule_at', '!=', null)
-                        ->orderBy('created_at', 'DESC')
-                        ->get()
-                        ->groupBy(['message', 'schedule_at']);
-        
-        $schedule_arr = $this->getScheduleArray($schedules);
-        return response()->json($schedule_arr);
-        // return response()->json($schedules);
+        if ($id == "schedule") {
+            $user_phone = Auth::user()->phone;
+            $schedules = Msg::with(['img' => function ($query) {
+                                $query->select('msg_id', 'img_url');
+                            }])
+                            ->where(function ($query) use ($user_phone) {
+                                $query->where('sender_phone', '=', $user_phone);
+                                        // ->orWhere('receiver_phone', '=', $user_phone);
+                            })
+                            ->where('schedule_at', '!=', null)
+                            ->orderBy('created_at', 'DESC')
+                            ->get()
+                            ->groupBy(['message', 'schedule_at']);
+            
+            $schedule_arr = $this->getScheduleArray($schedules);
+            return response()->json($schedule_arr);
+
+        } else {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Not valid url. Please input a correct url',
+            ]);
+        }
     }
 
     /**
@@ -156,7 +163,6 @@ class OutboxController extends Controller
                     }
                 }
             }
-
             array_push($schedule_arr, $sub_arr);
         }
         return $schedule_arr;

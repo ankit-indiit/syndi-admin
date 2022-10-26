@@ -163,22 +163,33 @@ class MessageController extends Controller
     {
         $user_phone = Auth::user()->phone;
         $receiver_phone = $id;
-        $messages = Msg::with(['img' => function ($query) {
-                            $query->select('msg_id', 'img_url');
-                        }])->where(function ($query) use ($user_phone) {
-                            $query->where('sender_phone', '=', $user_phone)
-                                    ->orWhere('receiver_phone', '=', $user_phone);
-                        })
-                        ->where(function ($query) use ($receiver_phone) {
-                            $query->where('sender_phone', '=', $receiver_phone)
-                                    ->orWhere('receiver_phone', '=', $receiver_phone);
-                        })
-                        ->where('schedule_at', null)
-                        ->orderBy('created_at', 'DESC')
-                        ->get();
-        
-        $message_array = $this->getMessageDetails($messages);
-        return response()->json($message_array);
+
+        $query = User::where('phone', $receiver_phone)->first();
+        if (is_null($query))
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Not valid url. Please input a correct phone number',
+            ]);
+        } else {
+            $messages = Msg::with(['img' => function ($query) {
+                                $query->select('msg_id', 'img_url');
+                            }])->where(function ($query) use ($user_phone) {
+                                $query->where('sender_phone', '=', $user_phone)
+                                        ->orWhere('receiver_phone', '=', $user_phone);
+                            })
+                            ->where(function ($query) use ($receiver_phone) {
+                                $query->where('sender_phone', '=', $receiver_phone)
+                                        ->orWhere('receiver_phone', '=', $receiver_phone);
+                            })
+                            ->where('schedule_at', null)
+                            ->orderBy('created_at', 'DESC')
+                            ->get();
+            
+            $message_array = $this->getMessageDetails($messages);
+            return response()->json($message_array);
+        }
+
     }
 
     /**
