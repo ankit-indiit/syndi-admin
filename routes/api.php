@@ -30,7 +30,6 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('msg', Message\MessageController::class);
     Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-url', Message\ImageUploadController::class);
-    Route::post('img-delete',[App\Http\Controllers\API\Message\ImageUploadController::class, 'destroy']);
     Route::resource('outbox', Message\OutboxController::class);
     
     // Admin
