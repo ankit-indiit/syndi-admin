@@ -120,21 +120,12 @@ class MessageController extends Controller
         $msg_id = $msg->id;
         foreach ($imageUrls as $key => $url) {
             $userId = User::where('phone', $sender_phone)->first()->id;
-            $img_query = Img::where('user_id', $userId)
-                            ->where('img_url', $url)
-                            ->first();
-            if (is_null($img_query)) {
-                $img = Img::create([
-                    'user_id' => $userId,
-                    'msg_id' => $msg_id,
-                    'type' => 'library',
-                    'img_url' => $url,
-                ]);
-            } else {
-                $query_update = Img::where('user_id', $userId)
-                                    ->where('img_url', $url)
-                                    ->update(array('msg_id' => $msg_id));
-            }
+            $img = Img::create([
+                'user_id' => $userId,
+                'msg_id' => $msg_id,
+                'type' => 'library',
+                'img_url' => $url,
+            ]);
         }
 
         // $event = NewMessage::dispatch($sender_phone, $text);
@@ -212,7 +203,13 @@ class MessageController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $msg_update = Msg::where('id', $id)
+                        ->update(array('read' => 1));
+
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'You read the new message.'
+        ]);
     }
 
     /**
@@ -357,11 +354,13 @@ class MessageController extends Controller
                 return $first['created_at'] < $second['created_at'];
             });
             $sub_arr = [];
+            $sub_arr['id'] = '';
             $sub_arr['sender_phone'] = '';
             $sub_arr['sender_name'] = '';
             $sub_arr['receiver_phone'] = '';
             $sub_arr['receiver_name'] = '';
             $sub_arr['message'] = '';
+            $sub_arr['read'] = '';
             $sub_arr['created_at'] = '';
 
             if (!is_null($sort_array[0]))
@@ -370,12 +369,14 @@ class MessageController extends Controller
                 foreach ($sort_array[0]['img'] as $key => $img) {
                     array_push($img_arr, $img['img_url']);
                 }
+                $sub_arr['id'] = $sort_array[0]['id'];
                 $sub_arr['sender_phone'] = $sort_array[0]['sender_phone'];
                 $sub_arr['sender_name'] = $sort_array[0]['sender_name'];
                 $sub_arr['receiver_phone'] = $sort_array[0]['receiver_phone'];
                 $sub_arr['receiver_name'] = $sort_array[0]['receiver_name'];
                 $sub_arr['message'] = $sort_array[0]['message'];
                 $sub_arr['created_at'] = $sort_array[0]['created_at'];
+                $sub_arr['read'] = $sort_array[0]['read'];
                 $sub_arr['imgs'] = $img_arr;
             }
             array_push($messages_array, $sub_arr);

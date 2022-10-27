@@ -110,6 +110,7 @@ class ImageUploadController extends Controller
             $image_urls = array();
             $image_query = Img::where('user_id', $user_id)
                                 ->where('type', $id)
+                                ->where('msg_id', null)
                                 ->orderBy('created_at', 'DESC')
                                 ->get();
         } elseif ($id == "free") {
@@ -161,17 +162,25 @@ class ImageUploadController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    // public function destroy(Request $request)
+    public function destroy(Request $request, $id)
     {
         $img_url = $request->img_url;
-        if (Auth::check()) {
+        $auth_validation = Auth::user()->phone == $id? true : false;
+
+        if ($auth_validation)
+        {
+            // It should not be deleted the image from storage because many previous chatting histories uses the image public url.
+            // try {
+            //     $this->deleteImage($img_url);
+            // } catch (QueryException $e) {
+            //     $errorMsg = 'Something went wrong on the Storage side for Image removal.';
+            // }
             try {
-                $this->deleteImage($img_url);
-            } catch (QueryException $e) {
-                $errorMsg = 'Something went wrong on the Storage side for Image removal.';
-            }
-            try {
-                $image = DB::table('imgs')->where('img_url', $img_url)->delete();
+                $image = DB::table('imgs')
+                            ->where('user_id', Auth::user()->id)
+                            ->where('msg_id', null)
+                            ->where('img_url', $img_url)->delete();
             } catch (QueryException $e) {
                 $errorMsg = 'Something went wrong on the Img Database side.';
             }
