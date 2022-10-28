@@ -40,8 +40,8 @@ return [
             'namespace'      => 'Nikolag\Square\SquareService',
             'application_id' => env('SQUARE_APPLICATION_ID'),
             'access_token'   => env('SQUARE_TOKEN'),
-            'sandbox'        => env('SQUARE_SANDBOX', false),
-            // 'sandbox'        => env('SQUARE_SANDBOX', true),
+            // 'sandbox'        => env('SQUARE_SANDBOX', false),
+            'sandbox'        => env('SQUARE_SANDBOX', true),
 
             /*
             |--------------------------------------------------------------------------

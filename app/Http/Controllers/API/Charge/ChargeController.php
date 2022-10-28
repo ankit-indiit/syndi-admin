@@ -147,7 +147,10 @@ class ChargeController extends Controller
                 "currency": "USD"
             },
             "idempotency_key":"'.uniqid().'",
-            "source_id": "'.$card_nonce.'"
+            "source_id": "'.$card_nonce.'",
+            "autocomplete": true,
+            "location_id": "'.env('SQUARE_LOCATION').'",
+            "note": "'.$note.'"
         }';
         $headers = [
             'Content-Type: application/json',
