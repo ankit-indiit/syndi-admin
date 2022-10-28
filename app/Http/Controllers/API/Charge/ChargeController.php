@@ -141,7 +141,6 @@ class ChargeController extends Controller
         // Payment Charge
         $url = 'https://connect.squareup.com/v2/payments';
         $ch = curl_init($url);
-        // "idempotency_key":"'.env('SQUARE_TOKEN').'",
         $data = '{
             "idempotency_key":"'.uniqid().'",
             "amount_money": {
@@ -150,14 +149,13 @@ class ChargeController extends Controller
             },
             "source_id": "'.$card_nonce.'",
             "autocomplete": true,
-            "customer_id": "W92WH6P11H4Z77CTET0RNTGFW8",
             "location_id": "'.env('SQUARE_LOCATION').'",
-            "reference_id": "123456",
             "note": "'.$note.'",
         }';
         $headers = [
             'Content-Type: application/json',
             'Accept: application/json',
+            'Square-Version: 2022-10-19',
             'Authorization: Bearer EAAAECsHkF8m02iFRbHvk0n-t488r_peVAIzmnytflpHyGGAlGbYjxq-lIQpAF5j',
         ];
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
