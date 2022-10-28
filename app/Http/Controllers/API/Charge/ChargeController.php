@@ -144,7 +144,7 @@ class ChargeController extends Controller
         $data = '{
             "idempotency_key":"'.uniqid().'",
             "amount_money": {
-                "amount": "'.(int)$amount.'",
+                "amount": "'.$amount.'",
                 "currency": "USD"
             },
             "source_id": "'.$card_nonce.'",
