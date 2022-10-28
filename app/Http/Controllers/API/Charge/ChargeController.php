@@ -142,15 +142,15 @@ class ChargeController extends Controller
         $url = 'https://connect.squareup.com/v2/payments';
         $ch = curl_init($url);
         $data = '{
-            "idempotency_key":"'.uniqid().'",
             "amount_money": {
-                "amount": '.$amount.',
+                "amount": '.(int)$amount.',
                 "currency": "USD"
             },
+            "idempotency_key":"'.uniqid().'",
             "source_id": "'.$card_nonce.'",
             "autocomplete": true,
             "location_id": "'.env('SQUARE_LOCATION').'",
-            "note": "'.$note.'",
+            "note": "'.$note.'"
         }';
         $headers = [
             'Content-Type: application/json',
