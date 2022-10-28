@@ -158,7 +158,7 @@ class ChargeController extends Controller
             'Square-Version: 2022-10-19',
             'Authorization: Bearer EAAAECsHkF8m02iFRbHvk0n-t488r_peVAIzmnytflpHyGGAlGbYjxq-lIQpAF5j',
         ];
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PATCH');
+        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
