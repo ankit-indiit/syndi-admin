@@ -121,12 +121,6 @@ class ChargeController extends Controller
             $errors = $api_response->getErrors();
         }
 
-        // To be removed after completed
-        $msgerror = Msgerror::create([
-            'error' => json_encode($result),
-        ]);
-        // End
-
         return response()->json($result);
     }
 
@@ -161,79 +155,7 @@ class ChargeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // $amount_money = new \Square\Models\Money();
-        // $amount_money->setAmount(1000);
-        // $amount_money->setCurrency('USD');
-
-        // $app_fee_money = new \Square\Models\Money();
-        // $app_fee_money->setAmount(10);
-        // $app_fee_money->setCurrency('USD');
-
-        // $body = new \Square\Models\CreatePaymentRequest(
-        //     'ccof:GaJGNaZa8x4OgDJn4GB',
-        //     '7b0f3ec5-086a-4871-8f13-3c81b3875218',
-        //     $amount_money
-        // );
-        // $body->setAppFeeMoney($app_fee_money);
-        // $body->setAutocomplete(true);
-        // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
-        // $body->setLocationId(env('SQUARE_LOCATION'));
-        // $body->setReferenceId('123456');
-        // $body->setNote('Brief description');
-
-        // $api_response = $client->getPaymentsApi()->createPayment($body);
-
-        // if ($api_response->isSuccess()) {
-        //     $result = $api_response->getResult();
-        // } else {
-        //     $errors = $api_response->getErrors();
-        // }
-
-
-        $amount = $request->amount;
-        $card_nonce = $request->card_nonce;
-        $currency = $request->currency;
-        $plan_type = $request->plan_type;
-        $note = $request->note;
-
-        // Payment Charge
-        // $url = 'https://connect.squareup.com/v2/payments';
-        $url = 'https://connect.squareupsandbox.com/v2/payments';
-        $ch = curl_init($url);
-        $data = '{
-            "amount_money": {
-                "amount": '.(int)$amount.',
-                "currency": "USD"
-            },
-            "idempotency_key":"'.uniqid().'",
-            "source_id": "'.$card_nonce.'",
-            "autocomplete": true,
-            "location_id": "'.env('SQUARE_LOCATION').'",
-            "note": "'.$note.'"
-        }';
-        $headers = [
-            'Content-Type: application/json',
-            'Accept: application/json',
-            'Square-Version: 2022-10-19',
-            'Authorization: Bearer EAAAECsHkF8m02iFRbHvk0n-t488r_peVAIzmnytflpHyGGAlGbYjxq-lIQpAF5j',
-        ];
-        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        // dd(json_decode($result));
-
-        // To be removed after completed
-        $msgerror = Msgerror::create([
-            'error' => json_encode($result),
-        ]);
-        // End
-
-        return response()->json(compact('result'));
-        
+        //
     }
 
     /**
