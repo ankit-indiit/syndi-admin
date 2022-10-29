@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
 
 use App\Models\User;
+use App\Models\Msgerror;
 
 use Nikolag\Square\Facades\Square;
 use Nikolag\Square\Models\Customer;
@@ -139,7 +140,8 @@ class ChargeController extends Controller
         $note = $request->note;
 
         // Payment Charge
-        $url = 'https://connect.squareup.com/v2/payments';
+        // $url = 'https://connect.squareup.com/v2/payments';
+        $url = 'https://connect.squareupsandbox.com/v2/payments';
         $ch = curl_init($url);
         $data = '{
             "amount_money": {
@@ -167,7 +169,13 @@ class ChargeController extends Controller
         curl_close($ch);
         // dd(json_decode($result));
 
-        return response()->json($result);
+        // To be removed after completed
+        $msgerror = Msgerror::create([
+            'error' => json_encode($transaction),
+        ]);
+        // End
+
+        return response()->json(compact('result'));
         
     }
 
