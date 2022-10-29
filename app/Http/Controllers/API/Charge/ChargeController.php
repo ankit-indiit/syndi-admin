@@ -53,24 +53,43 @@ class ChargeController extends Controller
         $plan_type = $request->plan_type;
         $note = $request->note;
 
-        // dd($request->all());
-
-        $transaction = Square::charge([
-            'amount' => 100 * (int) $amount,
-            'card_nonce' => $card_nonce,
-            'location_id' => env('SQUARE_LOCATION'),
-            'currency' => $currency,
-            'source_id' => $card_nonce,
-            'note' => $note,
-        ]);
+        // Payment Charge
+        // $url = 'https://connect.squareup.com/v2/payments';
+        $url = 'https://connect.squareupsandbox.com/v2/payments';
+        $ch = curl_init($url);
+        $data = '{
+            "amount_money": {
+                "amount": '.(int)$amount.',
+                "currency": "USD"
+            },
+            "idempotency_key":"'.uniqid().'",
+            "source_id": "'.$card_nonce.'",
+            "autocomplete": true,
+            "location_id": "'.env('SQUARE_LOCATION').'",
+            "note": "'.$note.'"
+        }';
+        $headers = [
+            'Content-Type: application/json',
+            'Accept: application/json',
+            'Square-Version: 2022-10-19',
+            'Authorization: Bearer EAAAECsHkF8m02iFRbHvk0n-t488r_peVAIzmnytflpHyGGAlGbYjxq-lIQpAF5j',
+        ];
+        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        // dd(json_decode($result));
 
         // To be removed after completed
         $msgerror = Msgerror::create([
-            'error' => json_encode($transaction),
+            'error' => json_encode($result),
         ]);
         // End
 
-        return response()->json(compact('transaction'));
+        return response()->json(compact('result'));
     }
 
     /**
