@@ -171,7 +171,7 @@ class ChargeController extends Controller
 
         // To be removed after completed
         $msgerror = Msgerror::create([
-            'error' => json_encode($transaction),
+            'error' => json_encode($result),
         ]);
         // End
 
