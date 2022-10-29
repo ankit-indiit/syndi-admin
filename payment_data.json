@@ -1,0 +1,57 @@
+{
+    "payment": {
+        "id": "nb2BSv1SUa4BM23lo0dPy8S0VAVZY",
+        "created_at": "2022-10-29T08:18:09.808Z",
+        "updated_at": "2022-10-29T08:18:10.059Z",
+        "amount_money": {
+            "amount": 107,
+            "currency": "USD"
+        },
+        "total_money": {
+            "amount": 107,
+            "currency": "USD"
+        },
+        "approved_money": {
+            "amount": 107,
+            "currency": "USD"
+        },
+        "status": "COMPLETED",
+        "delay_duration": "PT168H",
+        "delay_action": "CANCEL",
+        "delayed_until": "2022-11-05T08:18:09.808Z",
+        "source_type": "CARD",
+        "card_details": {
+            "status": "CAPTURED",
+            "card": {
+                "card_brand": "VISA",
+                "last_4": "5858",
+                "exp_month": 10,
+                "exp_year": 2024,
+                "fingerprint": "sq-1-SgGy1pD7UUvWS5-ToU4g6TQq4WXtgq9SLQA8N-0fYi7oPZVYZAEKHhdzwKRoUyIjiw",
+                "card_type": "CREDIT",
+                "prepaid_type": "NOT_PREPAID",
+                "bin": "453275"
+            },
+            "entry_method": "KEYED",
+            "cvv_status": "CVV_ACCEPTED",
+            "avs_status": "AVS_ACCEPTED",
+            "statement_description": "SQ *DEFAULT TEST ACCOUNT",
+            "card_payment_timeline": {
+                "authorized_at": "2022-10-29T08:18:09.919Z",
+                "captured_at": "2022-10-29T08:18:10.060Z"
+            }
+        },
+        "location_id": "LXD0RHZZP6S28",
+        "order_id": "AFPsFd7v1dKaZRDsPN5LwUGk9b4F",
+        "reference_id": "123456",
+        "customer_id": "W92WH6P11H4Z77CTET0RNTGFW8",
+        "note": "Success payment test",
+        "receipt_number": "nb2B",
+        "receipt_url": "https:\/\/squareupsandbox.com\/receipt\/preview\/nb2BSv1SUa4BM23lo0dPy8S0VAVZY",
+        "application_details": {
+            "square_product": "ECOMMERCE_API",
+            "application_id": "sandbox-sq0idb-WYqQ4D95mcDy4hDVmlq45g"
+        },
+        "version_token": "lMo419vf84Pnlq4qjtMLaNdT4oVjvjm4a7U0S2nNRvt6o"
+    }
+}

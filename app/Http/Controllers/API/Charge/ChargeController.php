@@ -14,8 +14,13 @@ use Illuminate\Database\QueryException;
 use App\Models\User;
 use App\Models\Msgerror;
 
-use Nikolag\Square\Facades\Square;
-use Nikolag\Square\Models\Customer;
+use Square\Models\Money;
+use Square\Models\CreatePaymentRequest;
+use Square\SquareClient;
+use Square\LocationsApi;
+use Square\Exceptions\ApiException;
+use Square\Http\ApiResponse;
+use Square\Environment;
 
 class ChargeController extends Controller
 {
@@ -52,10 +57,11 @@ class ChargeController extends Controller
         $currency = $request->currency;
         $plan_type = $request->plan_type;
         $note = $request->note;
+        $idempotency_key = uniqid();
 
-        // Payment Charge
-        // $url = 'https://connect.squareup.com/v2/payments';
-        $url = 'https://connect.squareupsandbox.com/v2/payments';
+        // ========== Payment Charge using CURL ==========
+        /*
+        $url = 'https://connect.squareupsandbox.com/v2/payments'; // $url = 'https://connect.squareup.com/v2/payments';
         $ch = curl_init($url);
         $data = '{
             "amount_money": {
@@ -74,14 +80,46 @@ class ChargeController extends Controller
             'Square-Version: 2022-10-19',
             'Authorization: Bearer EAAAECsHkF8m02iFRbHvk0n-t488r_peVAIzmnytflpHyGGAlGbYjxq-lIQpAF5j',
         ];
-        // curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
         $result = curl_exec($ch);
         curl_close($ch);
-        // dd(json_decode($result));
+        */
+
+        // ========== Payment Charge using PHP model ==========
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_TOKEN'),
+            'environment' => Environment::SANDBOX,
+        ]);
+        $amount_money = new Money();
+        $amount_money->setAmount((int)($amount));
+        $amount_money->setCurrency('USD');
+
+        // $app_fee_money = new Money();
+        // $app_fee_money->setAmount(10);
+        // $app_fee_money->setCurrency('USD');
+
+        $body = new CreatePaymentRequest(
+            $card_nonce,
+            $idempotency_key,
+            $amount_money
+        );
+        // $body->setAppFeeMoney($app_fee_money);
+        // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
+        // $body->setReferenceId('123456');
+        $body->setAutocomplete(true);
+        $body->setLocationId(env('SQUARE_LOCATION'));
+        $body->setNote($note);
+
+        $api_response = $client->getPaymentsApi()->createPayment($body);
+
+        if ($api_response->isSuccess()) {
+            $result = $api_response->getResult();
+        } else {
+            $errors = $api_response->getErrors();
+        }
 
         // To be removed after completed
         $msgerror = Msgerror::create([
@@ -89,7 +127,7 @@ class ChargeController extends Controller
         ]);
         // End
 
-        return response()->json(compact('result'));
+        return response()->json($result);
     }
 
     /**
