@@ -59,6 +59,41 @@ class ChargeController extends Controller
         $note = $request->note;
         $idempotency_key = uniqid();
 
+        // ========== Payment Charge using PHP model ==========
+        $client = new SquareClient([
+            'accessToken' => env('SQUARE_TOKEN'),
+            'environment' => Environment::SANDBOX, // 'environment' => Environment::PRODUCTION,
+        ]);
+        $amount_money = new Money();
+        $amount_money->setAmount((int)($amount));
+        $amount_money->setCurrency('USD');
+
+        // $app_fee_money = new Money();
+        // $app_fee_money->setAmount(10);
+        // $app_fee_money->setCurrency('USD');
+
+        $body = new CreatePaymentRequest(
+            $card_nonce,
+            $idempotency_key,
+            $amount_money
+        );
+        // $body->setAppFeeMoney($app_fee_money);
+        // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
+        // $body->setReferenceId('123456');
+        $body->setAutocomplete(true);
+        $body->setLocationId(env('SQUARE_LOCATION'));
+        $body->setNote($note);
+
+        $api_response = $client->getPaymentsApi()->createPayment($body);
+
+        if ($api_response->isSuccess()) {
+            $result = $api_response->getResult();
+        } else {
+            $result = $api_response->getErrors();
+        }
+
+        return response()->json($result);
+
         // ========== Payment Charge using CURL ==========
         /*
         $url = 'https://connect.squareupsandbox.com/v2/payments'; // $url = 'https://connect.squareup.com/v2/payments';
@@ -87,41 +122,6 @@ class ChargeController extends Controller
         $result = curl_exec($ch);
         curl_close($ch);
         */
-
-        // ========== Payment Charge using PHP model ==========
-        $client = new SquareClient([
-            'accessToken' => env('SQUARE_TOKEN'),
-            'environment' => Environment::SANDBOX,
-        ]);
-        $amount_money = new Money();
-        $amount_money->setAmount((int)($amount));
-        $amount_money->setCurrency('USD');
-
-        // $app_fee_money = new Money();
-        // $app_fee_money->setAmount(10);
-        // $app_fee_money->setCurrency('USD');
-
-        $body = new CreatePaymentRequest(
-            $card_nonce,
-            $idempotency_key,
-            $amount_money
-        );
-        // $body->setAppFeeMoney($app_fee_money);
-        // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
-        // $body->setReferenceId('123456');
-        $body->setAutocomplete(true);
-        $body->setLocationId(env('SQUARE_LOCATION'));
-        $body->setNote($note);
-
-        $api_response = $client->getPaymentsApi()->createPayment($body);
-
-        if ($api_response->isSuccess()) {
-            $result = $api_response->getResult();
-        } else {
-            $errors = $api_response->getErrors();
-        }
-
-        return response()->json($result);
     }
 
     /**
