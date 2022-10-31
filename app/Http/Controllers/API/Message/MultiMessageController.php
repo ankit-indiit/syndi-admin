@@ -86,7 +86,7 @@ class MultiMessageController extends Controller
         }
         if ($textLength == 0) {
             return response()->json([
-                'status' => 'warning',
+                'status' => 406,
                 'message' => 'Your message is empty. Please type or input an image.',
             ]);
         }
@@ -95,7 +95,7 @@ class MultiMessageController extends Controller
         $total_units = $units * $count_receivers;
         if ($total_units > Auth::user()->units->units) {
             return response()->json([
-                'status' => 'warning',
+                'status' => 406,
                 'message' => 'Your unit balance is not enough for your new message. Please charge.',
             ]);
         }
