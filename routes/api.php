@@ -34,7 +34,7 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('outbox', Message\OutboxController::class);
     
     // Charge
-    Route::resource('charge', Charge\ChargeController::class);
+    Route::resource('charge', Charge\ChargeController::class)->middleware('cors');
 
     // Admin
     Route::resource('img-upload', Admin\ImageUploadController::class);
