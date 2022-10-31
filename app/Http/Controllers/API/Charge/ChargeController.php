@@ -59,6 +59,7 @@ class ChargeController extends Controller
         $currency = $request->currency;
         $plan_type = $request->plan_type;
         $note = $request->note;
+        $units = $request->units;
         $idempotency_key = uniqid();
 
         // ========== Payment Charge using PHP model ==========
@@ -96,20 +97,20 @@ class ChargeController extends Controller
                 'amount' => $amount,
                 'type' => $plan_type,
                 'currency' => $currency,
-                'units' => 120,
+                'units' => $units,
             ]);
 
             $unit_id = Unit::where('user_id', Auth::user()->id)->first();
-            
+
             if (is_null($unit_id)) {
-                $units = Unit::create([
+                $new_units = Unit::create([
                     'user_id' => Auth::user()->id, // User ID
-                    'units' => 120,
+                    'units' => $units,
                 ]);
             } else {
                 $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
                 Unit::where('user_id', Auth::user()->id)->update(array(
-                    'units' => $prev_units + 120,
+                    'units' => $prev_units + $units,
                 ));
             }
 
