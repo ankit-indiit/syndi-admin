@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Msg;
 use App\Models\Msgerror;
 use App\Models\Img;
+use App\Models\Unit;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
@@ -77,7 +79,27 @@ class MultiMessageController extends Controller
         $send_now = $request->send_now;
         $schedule_at = $request->schedule_at;
         $imageUrls = $request->imageUrls;
-        
+
+        $textLength = Str::length($text);
+        foreach ($imageUrls as $key => $url) {
+            $textLength += Str::length($url);
+        }
+        if ($textLength == 0) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Your message is empty. Please type or input an image.',
+            ]);
+        }
+        $count_receivers = count($receiver_phones);
+        $units = ($textLength % 120) == 0 ? floor($textLength / 120) : floor($textLength / 120) + 1;
+        $total_units = $units * $count_receivers;
+        if ($total_units > Auth::user()->units->units) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Your unit balance is not enough for your new message. Please charge.',
+            ]);
+        }
+
         foreach ($receiver_phones as $key => $receiver_phone)
         {
             if ($send_now) {
@@ -116,8 +138,14 @@ class MultiMessageController extends Controller
                 'receiver_phone' => $receiver_phone,
                 'receiver_name' => $receiver_name,
                 'message' => $text,
+                'units' => $units,
                 'schedule_at' => $send_now? null: date('Y-m-d H:i:s', strtotime($schedule_at)),
             ]);
+
+            $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
+            Unit::where('user_id', Auth::user()->id)->update(array(
+                'units' => $prev_units - $total_units,
+            ));
 
             // Image URL Store
             $msg_id = $msg->id;

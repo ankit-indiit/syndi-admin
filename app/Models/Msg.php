@@ -11,7 +11,7 @@ class Msg extends Model
 
     protected $fillable = [
         'user_id', 'payload_id', 'room_id', 'sender_phone', 'sender_name', 'receiver_phone', 'receiver_name', 
-        'message', 'emoji', 'read', 'schedule_at', 'schedule_sent', 'created_at', 'updated_at',
+        'message', 'units', 'emoji', 'read', 'schedule_at', 'schedule_sent', 'created_at', 'updated_at',
     ];
 
     public function user(){

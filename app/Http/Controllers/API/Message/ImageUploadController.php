@@ -246,6 +246,8 @@ class ImageUploadController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+
+    // Test Function
     public function deleteStorageImage()
     {
         $path = 'https://api.syndicatesms.com/assets/images/library/1666722918.png';

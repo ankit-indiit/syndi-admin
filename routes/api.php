@@ -27,6 +27,7 @@ Route::resource('/reset-password', Auth\ResetController::class);
 
 Route::middleware('auth:api')->group(function () {
     Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
+    Route::get('/status', [App\Http\Controllers\API\Auth\LoginController::class, 'index']);
     Route::resource('msg', Message\MessageController::class);
     Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-url', Message\ImageUploadController::class);

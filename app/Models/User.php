@@ -36,5 +36,10 @@ class User extends Authenticatable
     public function user_images() {
         return $this->hasMany(Img::class);
     }
-
+    public function transactions() {
+        return $this->hasMany(Transaction::class);
+    }
+    public function units() {
+        return $this->hasOne(Unit::class);
+    }
 }

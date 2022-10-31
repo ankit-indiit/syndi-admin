@@ -9,11 +9,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
+use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Msg;
 use App\Models\Msgerror;
 use App\Models\Img;
+use App\Models\Unit;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
@@ -77,7 +79,26 @@ class MessageController extends Controller
         $receiver_phone = $request->receiver_phone;
         $text = $request->message;
         $imageUrls = $request->imageUrls;
-        
+
+        $textLength = Str::length($text);
+        foreach ($imageUrls as $key => $url) {
+            $textLength += Str::length($url);
+        }
+        if ($textLength == 0) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Your message is empty. Please type or input an image.',
+            ]);
+        }
+        $units = ($textLength % 120) == 0 ? floor($textLength / 120) : floor($textLength / 120) + 1;
+
+        if ($units > Auth::user()->units->units) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Your unit balance is not enough for your new message. Please charge.',
+            ]);
+        }
+
         // Set Key
         Telnyx::setApiKey(env('TELNYX_API_KEY'));
         $msg = Message::Create([
@@ -114,7 +135,13 @@ class MessageController extends Controller
             'receiver_phone' => $receiver_phone,
             'receiver_name' => $receiver_name,
             'message' => $text,
+            'units' => $units,
         ]);
+
+        $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
+        Unit::where('user_id', Auth::user()->id)->update(array(
+            'units' => $prev_units - $units,
+        ));
 
         // Image URL Store
         $msg_id = $msg->id;
@@ -224,9 +251,9 @@ class MessageController extends Controller
         $direction = $request->direction;
 
         // To be removed after completed
-        $msgerror = Msgerror::create([
-            'error' => json_encode($request->all()),
-        ]);
+        // $msgerror = Msgerror::create([
+        //     'error' => json_encode($request->all()),
+        // ]);
         // End
 
         if ($direction == 'inbound') {
@@ -300,6 +327,7 @@ class MessageController extends Controller
         }
     }
 
+    // Test Function
     public function messagePusher(Request $request)
     {
         $sender_phone = $request->sender_phone;

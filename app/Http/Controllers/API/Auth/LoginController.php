@@ -19,7 +19,14 @@ class LoginController extends Controller
      */
     public function index()
     {
-        //
+        $user = User::with('units')->where('id', Auth::user()->id)->first();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Current User Information',
+            'data' => [
+                'user' => $user,
+            ]
+        ]);
     }
 
     /**
@@ -68,6 +75,7 @@ class LoginController extends Controller
         }
 
         $user = Auth::user();
+        $units = Auth::user()->units;
         $token = auth()->user()->createToken('API Token')->accessToken;
         // $auth_token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
         

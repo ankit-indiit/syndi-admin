@@ -179,7 +179,6 @@ class RegisterController extends Controller
             'dpassword' => $request->password
         ]);
 
-        $signup_state = $user->save();
         $token = $user->createToken('API Token')->accessToken;
         return response()->json([
             'status' => 'success',

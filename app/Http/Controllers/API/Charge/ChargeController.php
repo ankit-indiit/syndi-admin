@@ -13,6 +13,8 @@ use Illuminate\Database\QueryException;
 
 use App\Models\User;
 use App\Models\Msgerror;
+use App\Models\Transaction;
+use App\Models\Unit;
 
 use Square\Models\Money;
 use Square\Models\CreatePaymentRequest;
@@ -88,8 +90,34 @@ class ChargeController extends Controller
 
         if ($api_response->isSuccess()) {
             $result = $api_response->getResult();
+
+            $transaction = Transaction::create([
+                'user_id' => Auth::user()->id, // User ID
+                'amount' => $amount,
+                'type' => $plan_type,
+                'currency' => $currency,
+                'units' => 120,
+            ]);
+
+            $unit_id = Unit::where('user_id', Auth::user()->id)->first();
+            
+            if (is_null($unit_id)) {
+                $units = Unit::create([
+                    'user_id' => Auth::user()->id, // User ID
+                    'units' => 120,
+                ]);
+            } else {
+                $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
+                Unit::where('user_id', Auth::user()->id)->update(array(
+                    'units' => $prev_units + 120,
+                ));
+            }
+
         } else {
             $result = $api_response->getErrors();
+            $msgerror = Msgerror::create([
+                'error' => json_encode($result),
+            ]);
         }
 
         return response()->json($result);
