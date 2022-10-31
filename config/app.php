@@ -179,6 +179,7 @@ return [
         Aws\Laravel\AwsServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
         Laravel\Passport\PassportServiceProvider::class,
+        FruitCake\Cors\ServiceProvider::class,
 
     ],
 

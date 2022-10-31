@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*', 'http://3.137.108.96/'],
+    'allowed_origins' => ['*', 'https://dev.syndicatesms.com'],
 
     'allowed_origins_patterns' => [],
 
