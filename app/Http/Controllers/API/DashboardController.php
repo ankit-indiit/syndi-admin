@@ -110,7 +110,7 @@ class DashboardController extends Controller
      */
     protected function getUnreadMessage($filter)
     {
-        $filter_time = $filter == "week"? 604800 : 2592000;
+        $filter_time = $filter == "week"? 604800 : 2592000; // week & month timestamp
         $user_phone = Auth::user()->phone;
         $unread_msg_num = Msg::with(['img' => function ($query) {
                             $query->select('msg_id', 'img_url');
