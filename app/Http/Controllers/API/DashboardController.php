@@ -4,7 +4,6 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
@@ -12,6 +11,8 @@ use Illuminate\Support\Str;
 
 use App\Models\User;
 use App\Models\Msg;
+
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -22,28 +23,11 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $user_phone = Auth::user()->phone;
-        $unread_msg_num = Msg::with(['img' => function ($query) {
-                            $query->select('msg_id', 'img_url');
-                        }])
-                        ->where('receiver_phone', $user_phone)
-                        ->where('read', 0)
-                        ->get()
-                        ->count();
-        
-        $sent_msg_num = Msg::with(['img' => function ($query) {
-                            $query->select('msg_id', 'img_url');
-                        }])
-                        ->where('sender_phone', $user_phone)
-                        ->get()
-                        ->count();
-
+        $filter = "all";
+        $data = $this->getUnreadMessage($filter);
         return response()->json([
             'status' => 200,
-            'data' => [
-                'unread_msg_num' => $unread_msg_num,
-                'sent_msg_num' => $sent_msg_num,
-            ]
+            'data' => $data
         ]);
     }
 
@@ -65,7 +49,12 @@ class DashboardController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $filter = $request->filter;
+        $data = $this->getUnreadMessage($filter);
+        return response()->json([
+            'status' => 200,
+            'data' => $data
+        ]);
     }
 
     /**
@@ -111,5 +100,44 @@ class DashboardController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    /**
+     * Get Unread Message number Function.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function getUnreadMessage($filter)
+    {
+        $filter_time = $filter == "week"? 604800 : 2592000;
+        $user_phone = Auth::user()->phone;
+        $unread_msg_num = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])->where(function ($query) use ($filter, $filter_time) {
+                            if ($filter != "all") {
+                                $query->where('created_at', '>=', date('Y-m-d H:i:s', time() - $filter_time ));
+                            }
+                        })
+                        ->where('receiver_phone', $user_phone)
+                        ->where('read', 0)
+                        ->get()
+                        ->count();
+        
+        $sent_msg_num = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])->where(function ($query) use ($filter, $filter_time) {
+                            if ($filter != "all") {
+                                $query->where('created_at', '>=', date('Y-m-d H:i:s', time() - $filter_time));
+                            }
+                        })
+                        ->where('sender_phone', $user_phone)
+                        ->get()
+                        ->count();
+        $data = [
+            'unread_msg_num' => $unread_msg_num,
+            'sent_msg_num' => $sent_msg_num,
+        ];
+        return $data;
     }
 }
