@@ -251,9 +251,9 @@ class MessageController extends Controller
         $direction = $request->direction;
 
         // To be removed after completed
-        // $msgerror = Msgerror::create([
-        //     'error' => json_encode($request->all()),
-        // ]);
+        $msgerror = Msgerror::create([
+            'error' => json_encode($request->all()),
+        ]);
         // End
 
         if ($direction == 'inbound') {
@@ -262,7 +262,6 @@ class MessageController extends Controller
             $sender_phone = $request->from;
             $receiver_phone = $request->to;
             $text = $request->body;
-
             try {
                 $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
                                     $query->where('sender_phone', '=', $receiver_phone)
