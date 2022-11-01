@@ -23,16 +23,28 @@ class DashboardController extends Controller
     public function index()
     {
         $user_phone = Auth::user()->phone;
-        $unread_messages = Msg::with(['img' => function ($query) {
-                                $query->select('msg_id', 'img_url');
-                            }])
-                            ->where('receiver_phone', $user_phone)
-                            ->where('read', 0)
-                            ->orderBy('created_at', 'DESC')
-                            ->get();
+        $unread_msg_num = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])
+                        ->where('receiver_phone', $user_phone)
+                        ->where('read', 0)
+                        ->get()
+                        ->count();
         
-        // $message_array = $this->getMessageDetails($messages);
-        return response()->json($unread_messages);
+        $sent_msg_num = Msg::with(['img' => function ($query) {
+                            $query->select('msg_id', 'img_url');
+                        }])
+                        ->where('sender_phone', $user_phone)
+                        ->get()
+                        ->count();
+
+        return response()->json([
+            'status' => 200,
+            'data' => [
+                'unread_msg_num' => $unread_msg_num,
+                'sent_msg_num' => $sent_msg_num,
+            ]
+        ]);
     }
 
     /**
