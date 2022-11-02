@@ -43,7 +43,7 @@ class ContactController extends Controller
                 array_push($connected_phones, $sub_arr);
             }
             if(!in_array($value->receiver_phone, $phones)) {
-                $sub_arr['phone_number'] = $value->sender_phone;
+                $sub_arr['phone_number'] = $value->receiver_phone;
                 $sub_arr['created_at'] = $value->created_at;
                 array_push($phones, $value->receiver_phone);
                 array_push($connected_phones, $sub_arr);
