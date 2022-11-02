@@ -5,6 +5,13 @@ namespace App\Http\Controllers\API\Contacts;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
+
+use App\Models\User;
+use App\Models\Contact;
+
 class ContactController extends Controller
 {
     /**
@@ -37,15 +44,51 @@ class ContactController extends Controller
     {
         $csvFile = $request->contact_file;
         // $csvFile = $request->file('contact_file');
-        $this->validate(request(), [
-            'contact_file' => ['required',function ($attribute, $value, $fail) {
-                if (!in_array($value->getClientOriginalExtension(), ['csv'])) {
-                    $fail('Incorrect :attribute type choose. It must be csv file type.');
-                }
-            }]
-        ]);
-        $data = $this->csvToArray($csvFile);
-        return response()->json($data);
+
+        if (is_null($csvFile)) {
+            $phone_number = $request->phone_number;
+            $first_name = $request->first_name;
+            $last_name = $request->last_name;
+            $email = $request->email;
+            $note = $request->note;
+            $group_ids = $request->group_ids;
+
+            $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
+
+            if (is_null($query)) {
+                $contact = Contact::Create([
+                    'user_id' => Auth::user()->id,
+                    'phone_number' => $phone_number,
+                    'first_name' => $first_name,
+                    'last_name' => $last_name,
+                    'email' => $email,
+                    'note' => $note,
+                    'group_ids' => $group_ids
+                ]);
+            } else {
+                return response()->json([
+                    'status' => 406, // not acceptable
+                    'message' => 'The contact is already exist.',
+                ]);
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'New contact created successfully.',
+                'data' => [
+                    'contact' => $contact,
+                ]
+            ]);
+        } else {
+            $this->validate(request(), [
+                'contact_file' => ['required',function ($attribute, $value, $fail) {
+                    if (!in_array($value->getClientOriginalExtension(), ['csv'])) {
+                        $fail('Incorrect :attribute type choose. It must be csv file type.');
+                    }
+                }]
+            ]);
+            $data = $this->csvToArray($csvFile);
+            return response()->json($data);
+        }
     }
 
     /**

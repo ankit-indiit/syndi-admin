@@ -13,6 +13,15 @@ class Group extends Model
         'user_id', 'name', 'description', 'status'
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        // 'user_id', 'status'
+    ];
+
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }

@@ -18,8 +18,8 @@ class CreateContactsTable extends Migration
             $table->unsignedBigInteger('user_id')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
             $table->string('phone_number')->nullable();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('first_name')->unique();
+            $table->string('last_name')->unique();
             $table->string('email')->unique();
             $table->string('note')->unique();
             $table->string('group_ids')->nullable();

@@ -13,6 +13,15 @@ class Contact extends Model
         'user_id', 'phone_number', 'first_name', 'last_name', 'email', 'note', 'group_ids', 'status', 'block'
     ];
 
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'block',
+    ];
+
     public function user() {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
