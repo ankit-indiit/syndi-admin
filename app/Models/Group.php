@@ -19,7 +19,7 @@ class Group extends Model
      * @var array
      */
     protected $hidden = [
-        // 'user_id', 'status'
+        'user_id', 'status'
     ];
 
     public function user() {

@@ -19,7 +19,7 @@ class Contact extends Model
      * @var array
      */
     protected $hidden = [
-        'block',
+        'status', 'block',
     ];
 
     public function user() {
