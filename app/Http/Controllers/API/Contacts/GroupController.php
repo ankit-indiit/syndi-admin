@@ -21,7 +21,8 @@ class GroupController extends Controller
      */
     public function index()
     {
-        //
+        $groups = Group::where('status', 1)->get();
+        return response()->json($groups);
     }
 
     /**
