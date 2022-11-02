@@ -99,7 +99,27 @@ class ContactController extends Controller
                 }]
             ]);
             $data = $this->csvToArray($csvFile);
-            return response()->json($data);
+
+            foreach ($data as $key => $value) {
+                $phone_number = $value['Phone Number'];
+                $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
+
+                if (is_null($query)) {
+                    $contact = Contact::Create([
+                        'user_id' => Auth::user()->id,
+                        'phone_number' => $phone_number,
+                        'first_name' => $value['First Name'],
+                        'last_name' => $value['Last Name'],
+                        'email' => $value['Email'],
+                        'note' => $value['Note'],
+                    ]);
+                }
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'New contacts created successfully from CSV file.',
+                'data' => $data
+            ]);
         }
     }
 
