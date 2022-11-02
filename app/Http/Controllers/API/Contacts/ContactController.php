@@ -31,24 +31,8 @@ class ContactController extends Controller
         $contacts = $this->getContacts($contacts_query);
 
         $messages = Msg::all();
-        $phones = array();
-        $connected_phones = array();
-        foreach ($messages as $key => $value)
-        {
-            $sub_arr = [];
-            if(!in_array($value->sender_phone, $phones)) {
-                $sub_arr['phone_number'] = $value->sender_phone;
-                $sub_arr['created_at'] = $value->created_at;
-                array_push($phones, $value->sender_phone);
-                array_push($connected_phones, $sub_arr);
-            }
-            if(!in_array($value->receiver_phone, $phones)) {
-                $sub_arr['phone_number'] = $value->receiver_phone;
-                $sub_arr['created_at'] = $value->created_at;
-                array_push($phones, $value->receiver_phone);
-                array_push($connected_phones, $sub_arr);
-            }
-        }
+        $connected_phones = $this->getConnectedPhones($messages);
+        
         $data = array_merge($contacts, $connected_phones);
         return response()->json($data);
     }
@@ -166,7 +150,7 @@ class ContactController extends Controller
 
 
     // Read CSV file and get Array
-    function csvToArray($filename = '', $delimiter = ',')
+    protected function csvToArray($filename = '', $delimiter = ',')
     {
         if (!file_exists($filename) || !is_readable($filename))
             return false;
@@ -188,7 +172,7 @@ class ContactController extends Controller
     }
 
     // Get Contact List with Group name
-    function getContacts($contacts_query)
+    protected function getContacts($contacts_query)
     {
         $contacts = array();
         foreach ($contacts_query as $key => $contact)
@@ -200,8 +184,9 @@ class ContactController extends Controller
             $sub_arr['last_name'] = $contact->last_name;
             $sub_arr['email'] = $contact->email;
             $sub_arr['note'] = $contact->note;
+            $sub_arr['group_names'] = '';
+            $sub_arr['source'] = 'Manually Added';
             $sub_arr['created_at'] = $contact->created_at;
-            $sub_arr['group_names'] = [];
 
             $groups = Group::where('user_id', Auth::user()->id)->where('status', 1)->get();
             $group_ids = array_map('intval', explode(',', $contact->group_ids));
@@ -209,11 +194,45 @@ class ContactController extends Controller
             {
                 if(in_array($group->id, $group_ids))
                 {
-                    array_push($sub_arr['group_names'], $group->name);
+                    if ($sub_arr['group_names'] == '') {
+                        $sub_arr['group_names'] = $group->name;
+                    } else {
+                        $sub_arr['group_names'] = $sub_arr['group_names'] . ', ' . $group->name;
+                    }
                 }
             }
             array_push($contacts, $sub_arr);
         }
         return $contacts;
+    }
+    // Get Connected Phone number List
+    protected function getConnectedPhones($messages)
+    {
+        $phones = array();
+        $connected_phones = array();
+        foreach ($messages as $key => $value)
+        {
+            $sub_arr = [];
+            $sub_arr['phone_number'] = '';
+            $sub_arr['first_name'] = '';
+            $sub_arr['last_name'] = '';
+            $sub_arr['email'] = '';
+            $sub_arr['note'] = '';
+            $sub_arr['group_names'] = '';
+            $sub_arr['source'] = 'Outbound';
+            if(!in_array($value->sender_phone, $phones)) {
+                $sub_arr['phone_number'] = $value->sender_phone;
+                $sub_arr['created_at'] = $value->created_at;
+                array_push($phones, $value->sender_phone);
+                array_push($connected_phones, $sub_arr);
+            }
+            if(!in_array($value->receiver_phone, $phones)) {
+                $sub_arr['phone_number'] = $value->receiver_phone;
+                $sub_arr['created_at'] = $value->created_at;
+                array_push($phones, $value->receiver_phone);
+                array_push($connected_phones, $sub_arr);
+            }
+        }
+        return $connected_phones;
     }
 }
