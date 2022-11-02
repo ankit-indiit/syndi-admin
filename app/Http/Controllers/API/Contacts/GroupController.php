@@ -96,7 +96,23 @@ class GroupController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $name = $request->name;
+        $description = $request->description;
+        $query = Group::where('id', '!=', $id)->where('name', $name)->first();
+
+        if (is_null($query)) {
+            $update = Group::where('id', $id)
+                            ->update(array('name' => $name, 'description' => $description));    
+            return response()->json([
+                'status' => 200,
+                'message' => 'Your changes were successfully updated.'
+            ]);
+        } else {
+            return response()->json([
+                'status' => 406,
+                'message' => 'The group name is already exist.'
+            ]);
+        }
     }
 
     /**
