@@ -128,7 +128,6 @@ class GroupController extends Controller
             $sub_arr['contact_num'] = 0;
 
             $contacts = Contact::where('user_id', Auth::user()->id)->where('status', 1)->get();
-
             foreach ($contacts as $key => $contact)
             {
                 $group_ids = array_map('intval', explode(',', $contact->group_ids));

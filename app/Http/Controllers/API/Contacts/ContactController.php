@@ -8,9 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
+use Illuminate\Database\Eloquent\Collection;
 
 use App\Models\User;
 use App\Models\Contact;
+use App\Models\Msg;
+use App\Models\Group;
 
 class ContactController extends Controller
 {
@@ -21,7 +24,33 @@ class ContactController extends Controller
      */
     public function index()
     {
-        //
+        $contacts_query = Contact::where('user_id', Auth::user()->id)
+                            ->where('status', 1)
+                            ->select('id', 'phone_number', 'first_name', 'last_name', 'email', 'note', 'group_ids', 'created_at')
+                            ->get();
+        $contacts = $this->getContacts($contacts_query);
+
+        $messages = Msg::all();
+        $phones = array();
+        $connected_phones = array();
+        foreach ($messages as $key => $value)
+        {
+            $sub_arr = [];
+            if(!in_array($value->sender_phone, $phones)) {
+                $sub_arr['phone_number'] = $value->sender_phone;
+                $sub_arr['created_at'] = $value->created_at;
+                array_push($phones, $value->sender_phone);
+                array_push($connected_phones, $sub_arr);
+            }
+            if(!in_array($value->receiver_phone, $phones)) {
+                $sub_arr['phone_number'] = $value->sender_phone;
+                $sub_arr['created_at'] = $value->created_at;
+                array_push($phones, $value->receiver_phone);
+                array_push($connected_phones, $sub_arr);
+            }
+        }
+        $data = array_merge($contacts, $connected_phones);
+        return response()->json($data);
     }
 
     /**
@@ -54,7 +83,6 @@ class ContactController extends Controller
             $group_ids = $request->group_ids;
 
             $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
-
             if (is_null($query)) {
                 $contact = Contact::Create([
                     'user_id' => Auth::user()->id,
@@ -157,5 +185,35 @@ class ContactController extends Controller
             fclose($handle);
         }
         return $data;
+    }
+
+    // Get Contact List with Group name
+    function getContacts($contacts_query)
+    {
+        $contacts = array();
+        foreach ($contacts_query as $key => $contact)
+        {
+            $sub_arr = [];
+            $sub_arr['id'] = $contact->id;
+            $sub_arr['phone_number'] = $contact->phone_number;
+            $sub_arr['first_name'] = $contact->first_name;
+            $sub_arr['last_name'] = $contact->last_name;
+            $sub_arr['email'] = $contact->email;
+            $sub_arr['note'] = $contact->note;
+            $sub_arr['created_at'] = $contact->created_at;
+            $sub_arr['group_names'] = [];
+
+            $groups = Group::where('user_id', Auth::user()->id)->where('status', 1)->get();
+            $group_ids = array_map('intval', explode(',', $contact->group_ids));
+            foreach ($groups as $key => $group)
+            {
+                if(in_array($group->id, $group_ids))
+                {
+                    array_push($sub_arr['group_names'], $group->name);
+                }
+            }
+            array_push($contacts, $sub_arr);
+        }
+        return $contacts;
     }
 }
