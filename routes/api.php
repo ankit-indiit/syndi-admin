@@ -29,8 +29,12 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
     Route::get('/status', [App\Http\Controllers\API\Auth\LoginController::class, 'index']);
 
-    // Charge
+    // Dashboard
     Route::resource('dashboard', DashboardController::class);
+
+    // Contact
+    Route::resource('contact', Contacts\ContactController::class);
+    Route::resource('group', Contacts\GroupController::class);
 
     // Message
     Route::resource('msg', Message\MessageController::class);

@@ -42,4 +42,10 @@ class User extends Authenticatable
     public function units() {
         return $this->hasOne(Unit::class);
     }
+    public function contacts() {
+        return $this->hasMany(Contact::class);
+    }
+    public function groups() {
+        return $this->hasMany(Group::class);
+    }
 }
