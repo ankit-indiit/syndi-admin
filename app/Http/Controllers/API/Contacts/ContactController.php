@@ -105,7 +105,10 @@ class ContactController extends Controller
                 foreach ($data as $key => $value) {
                     $phone_number = $value['Phone Number'];
                     if (!str_contains($phone_number, '+')) { 
-                        $phone_number = '+'.$phone_number;
+                        return response()->json([
+                            'status' => 422,
+                            'message' => 'Phone Number stype is not right. Please follow the default CSV file style.',
+                        ]); 
                     }
                     $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
     
