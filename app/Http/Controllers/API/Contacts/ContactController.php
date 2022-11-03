@@ -104,6 +104,9 @@ class ContactController extends Controller
             try {
                 foreach ($data as $key => $value) {
                     $phone_number = $value['Phone Number'];
+                    if (!str_contains($phone_number, '+')) { 
+                        $phone_number = '+'.$phone_number;
+                    }
                     $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
     
                     if (is_null($query)) {
