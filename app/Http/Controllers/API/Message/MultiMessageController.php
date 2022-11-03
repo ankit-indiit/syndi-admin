@@ -16,6 +16,8 @@ use App\Models\Msg;
 use App\Models\Msgerror;
 use App\Models\Img;
 use App\Models\Unit;
+use App\Models\Group;
+use App\Models\Contact;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
@@ -38,7 +40,6 @@ class MultiMessageController extends Controller
     {
         $messages = Msg::all();
         $phones = array();
-
         foreach ($messages as $key => $value)
         {
             if(!in_array($value->sender_phone, $phones)) {
@@ -48,7 +49,16 @@ class MultiMessageController extends Controller
                 array_push($phones, $value->receiver_phone);
             }
         }
-        return response()->json($phones);
+
+        $groups = Group::where('user_id', Auth::user()->id)->where('status', 1)->get();
+        $group_names = array();
+        foreach ($groups as $key => $value)
+        {
+            array_push($group_names, $value->name);
+        }
+
+        $data = array_merge($phones, $group_names);
+        return response()->json($data);
     }
 
     /**
