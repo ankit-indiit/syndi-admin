@@ -288,7 +288,7 @@ class ContactController extends Controller
      */
     public function getFilterContact(Request $request)
     {
-        $phone_number = $request->phone;
+        $phone_number = $request->phone_number;
         $first_name = $request->first_name;
         $last_name = $request->last_name;
         $email = $request->email;
