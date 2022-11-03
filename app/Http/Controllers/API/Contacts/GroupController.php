@@ -137,6 +137,7 @@ class GroupController extends Controller
                     $prev_ids = $contact->group_ids;
                     $new_ids = str_replace(','.$group_id, '', $prev_ids);
                     $new_ids = str_replace($group_id.',', '', $new_ids);
+                    $new_ids = str_replace($group_id, '', $new_ids);
 
                     $update = Contact::where('id', $contact->id)
                                 ->update(array('group_ids' => $new_ids));    
