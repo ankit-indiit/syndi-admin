@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use Illuminate\Database\Eloquent\Collection;
+use Exception;
 
 use App\Models\User;
 use App\Models\Contact;
@@ -100,21 +101,29 @@ class ContactController extends Controller
             ]);
             $data = $this->csvToArray($csvFile);
 
-            foreach ($data as $key => $value) {
-                $phone_number = $value['Phone Number'];
-                $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
-
-                if (is_null($query)) {
-                    $contact = Contact::Create([
-                        'user_id' => Auth::user()->id,
-                        'phone_number' => $phone_number,
-                        'first_name' => $value['First Name'],
-                        'last_name' => $value['Last Name'],
-                        'email' => $value['Email'],
-                        'note' => $value['Note'],
-                    ]);
+            try {
+                foreach ($data as $key => $value) {
+                    $phone_number = $value['Phone Number'];
+                    $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
+    
+                    if (is_null($query)) {
+                        $contact = Contact::Create([
+                            'user_id' => Auth::user()->id,
+                            'phone_number' => $phone_number,
+                            'first_name' => $value['First Name'],
+                            'last_name' => $value['Last Name'],
+                            'email' => $value['Email'],
+                            'note' => $value['Note'],
+                        ]);
+                    }
                 }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'status' => 422,
+                    'message' => 'The contact file is not written exactly. Please use the default CSV file style.',
+                ]);    
             }
+            
             return response()->json([
                 'status' => 200,
                 'message' => 'New contacts created successfully from CSV file.',

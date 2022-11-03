@@ -123,7 +123,18 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            Group::destroy($id);
+            return response()->json([
+                'status' => 200,
+                'message' => 'The group is deleted successfully.'
+            ]);
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Something went wrong. Please contact administrator.'
+            ]);
+        }
     }
 
     /**
