@@ -255,4 +255,47 @@ class ContactController extends Controller
         }
         return $connected_phones;
     }
+
+
+    /**
+     * Get Contacts with Filter
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getFilterContact(Request $request)
+    {
+        $phone_number = '+'.$request->phone;
+        $first_name = $request->first_name;
+        $last_name = $request->last_name;
+        $email = $request->email;
+        $group_name = $request->group_name;
+        $group = Group::where('user_id', Auth::user()->id)->where('name', $group_name)->where('status', 1)->first();
+        $group_id = is_null($group)? 0 : $group->id;
+        
+        $contacts = Contact::where('user_id', Auth::user()->id)
+                        ->where(
+                            function($query) use ($phone_number, $first_name, $last_name, $email, $group_id, $group_name) {
+                                if (!is_null($phone_number) && $phone_number != '') {
+                                    $query->where('phone_number', $phone_number);
+                                }
+                                if (!is_null($first_name) && $first_name != '') {
+                                    $query->where('first_name', $first_name);
+                                }
+                                if (!is_null($last_name) && $last_name != '') {
+                                    $query->where('last_name', $last_name);
+                                }
+                                if (!is_null($email) && $email != '') {
+                                    $query->where('email', $email);
+                                }
+                                if (!is_null($group_name) && $group_id != 0) {
+                                    $query->where('group_ids', 'LIKE', '%'.$group_id.'%');
+                                }
+                            }
+                        )
+                        ->where('status', 1)
+                        ->select('id', 'phone_number', 'first_name', 'last_name', 'email', 'note', 'group_ids', 'created_at')
+                        ->get();
+        return response()->json($contacts);
+    }
 }

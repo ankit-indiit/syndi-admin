@@ -34,6 +34,8 @@ Route::middleware('auth:api')->group(function () {
 
     // Contact
     Route::resource('contact', Contacts\ContactController::class);
+    Route::get('/contact-filter', [App\Http\Controllers\API\Contacts\ContactController::class, 'getFilterContact']);
+    
     Route::resource('group', Contacts\GroupController::class);
 
     // Message
