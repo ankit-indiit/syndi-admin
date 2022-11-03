@@ -133,7 +133,6 @@ class GroupController extends Controller
                         ->where('status', 1)
                         ->get();
                 foreach ($contacts as $key => $contact) {
-                    
                     $prev_ids = $contact->group_ids;
                     $new_ids = str_replace(','.$group_id, '', $prev_ids);
                     $new_ids = str_replace($group_id.',', '', $new_ids);
