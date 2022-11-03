@@ -123,11 +123,28 @@ class GroupController extends Controller
      */
     public function destroy($id)
     {
+        $group_ids = array_map('intval', explode(',', $id));
         try {
-            Group::destroy($id);
+            foreach ($group_ids as $key => $group_id) {
+                Group::where('user_id', Auth::user()->id)->where('id', $group_id)->delete();
+                
+                $contacts = Contact::where('user_id', Auth::user()->id)
+                        ->where('group_ids', 'LIKE', '%'.$group_id.'%')
+                        ->where('status', 1)
+                        ->get();
+                foreach ($contacts as $key => $contact) {
+                    
+                    $prev_ids = $contact->group_ids;
+                    $new_ids = str_replace(','.$group_id, '', $prev_ids);
+                    $new_ids = str_replace($group_id.',', '', $new_ids);
+
+                    $update = Contact::where('id', $contact->id)
+                                ->update(array('group_ids' => $new_ids));    
+                }
+            }
             return response()->json([
                 'status' => 200,
-                'message' => 'The group is deleted successfully.'
+                'message' => 'The selected groups are deleted successfully.'
             ]);
         } catch (QueryException $e) {
             return response()->json([

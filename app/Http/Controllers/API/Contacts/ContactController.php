@@ -174,7 +174,21 @@ class ContactController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $contact_ids = array_map('intval', explode(',', $id));
+        try {
+            foreach ($contact_ids as $key => $contact_id) {
+                Contact::where('user_id', Auth::user()->id)->where('id', $contact_id)->delete();
+            }
+            return response()->json([
+                'status' => 200,
+                'message' => 'The selected contacts are deleted successfully.'
+            ]);
+        } catch (QueryException $e) {
+            return response()->json([
+                'status' => 500,
+                'message' => 'Something went wrong. Please contact administrator.'
+            ]);
+        }
     }
 
 
