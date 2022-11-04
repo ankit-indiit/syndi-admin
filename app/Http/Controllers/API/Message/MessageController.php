@@ -250,6 +250,10 @@ class MessageController extends Controller
     {
         $direction = $request->direction;
 
+        $msgerror = Msgerror::create([
+            'error' => json_encode($request->all()),
+        ]);
+        
         if (is_null($direction)) {
             $created_at = $request->data['occurred_at'];
             $payload = $request->data['payload'];
@@ -290,7 +294,7 @@ class MessageController extends Controller
                 $saved_query = Msg::where('sender_phone', $sender_phone)
                                     ->where('receiver_phone', $receiver_phone)
                                     ->where('message', $text)
-                                    ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime($created_at)-2))
+                                    ->where('created_at', '>=', date('Y-m-d H:i:s', strtotime($created_at)-10))
                                     ->first();
     
                 if (is_null($saved_query)) {
