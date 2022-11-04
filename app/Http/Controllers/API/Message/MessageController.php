@@ -249,29 +249,31 @@ class MessageController extends Controller
     public function webhook(Request $request)
     {
         $direction = $request->direction;
+        $store_flag = 0;
 
-        $msgerror = Msgerror::create([
-            'error' => json_encode($request->all()),
-        ]);
-        
         if (is_null($direction)) {
             $created_at = $request->data['occurred_at'];
             $payload = $request->data['payload'];
             $payload_id = $request->data['payload']['id'];
             $text = $request->data['payload']['text'];
             $direction = $request->data['payload']['direction'];
-
             $sender_phone = $request->data['payload']['from']['phone_number'];
             $receiver_phone = $request->data['payload']['to'][0]['phone_number'];
+            
+            $from_line_type = $request->data['payload']['from']['line_type'];
+            if ($from_line_type == 'Wireline') {
+                $store_flag = 1;
+            }
         } else {
             $created_at = date('Y-m-d H:i:s', strtotime(Carbon::now()));
             $payload_id = $request->sms_id;
             $sender_phone = $request->from;
             $receiver_phone = $request->to;
             $text = $request->body;
+            $store_flag = 1;
         }
 
-        if ($direction == 'inbound') {
+        if ($direction == 'inbound' && $store_flag == 1) {
             try {
                 $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
                                     $query->where('sender_phone', '=', $receiver_phone)
