@@ -102,31 +102,49 @@ class ContactController extends Controller
             $data = $this->csvToArray($csvFile);
 
             try {
-                foreach ($data as $key => $value) {
-                    $phone_number = $value['Phone Number'];
-                    if (!str_contains($phone_number, '+')) {
-                        return response()->json([
-                            'status' => 422,
-                            'message' => 'Phone Number stype is not right. Please follow the default CSV file style.',
-                        ]); 
+                foreach ($data as $key => $user) {
+                    $phone_number = '';
+                    $first_name = '';
+                    $last_name = '';
+                    $email = '';
+                    $note = '';
+
+                    foreach ($user as $vkey => $value) {
+                        switch($vkey) {
+                            case 0: $phone_number = $value; break;
+                            case 1: $first_name = $value; break;
+                            case 2: $last_name = $value; break;
+                            case 3: $email = $value; break;
+                            case 4: $note = $value; break;
+                        }
                     }
-                    $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
-    
-                    if (is_null($query)) {
-                        $contact = Contact::Create([
-                            'user_id' => Auth::user()->id,
-                            'phone_number' => $phone_number,
-                            'first_name' => $value['First Name'],
-                            'last_name' => $value['Last Name'],
-                            'email' => $value['Email'],
-                            'note' => $value['Note'],
-                        ]);
+
+                    if (trim($phone_number) != '') {
+                        if (!str_contains($phone_number, '+')) {
+                            return response()->json([
+                                'status' => 422,
+                                'message' => 'Phone Number style is not right. Please follow the default CSV file style.',
+                            ]); 
+                        }
+                        $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
+        
+                        if (is_null($query)) {
+                            $contact = Contact::Create([
+                                'user_id' => Auth::user()->id,
+                                'phone_number' => $phone_number,
+                                'first_name' => $first_name,
+                                'last_name' => $last_name,
+                                'email' => $email,
+                                'note' => $note,
+                            ]);
+                        }
                     }
                 }
             } catch (\Exception $e) {
                 return response()->json([
                     'status' => 422,
-                    'message' => 'The contact file is not written exactly. Please use the default CSV file style.',
+                    // 'message' => 'The contact file is not written exactly. Please use the default CSV file style.',
+                    'message' => $e->getMessage(),
                 ]);    
             }
             
@@ -210,10 +228,12 @@ class ContactController extends Controller
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
             {
-                if (!$header)
+                if (!$header) {
                     $header = $row;
-                else
-                    $data[] = array_combine($header, $row);
+                } else {
+                    // $data[] = array_combine($header, $row);
+                    array_push($data, $row);
+                }
             }
             fclose($handle);
         }
