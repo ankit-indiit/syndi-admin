@@ -35,7 +35,7 @@ class UserSeeder extends Seeder
             'company'  => '',
             'phone'  => '+15512647183',
             'timezone'  => '',
-            'role'  => 1,
+            'role'  => 2,
             'password' => Hash::make('123456'),
             'dpassword'  => '123456',
         ]);

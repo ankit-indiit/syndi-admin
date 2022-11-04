@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Str;
+use Exception;
 
 use App\Models\User;
 use App\Models\Msg;
@@ -322,7 +323,7 @@ class MessageController extends Controller
                 }
                 return response()->json($data);
     
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $msgerror = Msgerror::create([
                     'error' => json_encode($request->all()),
                 ]);

@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
 
     // Admin
     Route::resource('img-upload', Admin\ImageUploadController::class);
+    Route::resource('super-admin', Admin\SuperAdminController::class);
 });
 
 
