@@ -104,7 +104,7 @@ class ContactController extends Controller
             try {
                 foreach ($data as $key => $value) {
                     $phone_number = $value['Phone Number'];
-                    if (!str_contains($phone_number, '+')) { 
+                    if (!str_contains($phone_number, '+')) {
                         return response()->json([
                             'status' => 422,
                             'message' => 'Phone Number stype is not right. Please follow the default CSV file style.',

@@ -90,6 +90,7 @@ class MultiMessageController extends Controller
         $schedule_at = $request->schedule_at;
         $imageUrls = $request->imageUrls;
 
+        // Check message length
         $textLength = Str::length($text);
         foreach ($imageUrls as $key => $url) {
             $textLength += Str::length($url);
@@ -100,7 +101,41 @@ class MultiMessageController extends Controller
                 'message' => 'Your message is empty. Please type or input an image.',
             ]);
         }
-        $count_receivers = count($receiver_phones);
+
+        // Get new receiver phone array from Group names
+        $receiver_arr = array();
+        $group_ids = array();
+        foreach ($receiver_phones as $key => $value) {
+            if (str_contains($value, '+')) {
+                if(!in_array($value, $receiver_arr)) {
+                    array_push($receiver_arr, $value);
+                }
+            } else {
+                $group = Group::where('user_id', Auth::user()->id)->where('name', $value)->where('status', 1)->first();
+                if (is_null($group)) {
+                    return response()->json([
+                        'status' => 422,
+                        'message' => $value.', This group name is not correct. Please confirm again.',
+                    ]);
+                } else {
+                    array_push($group_ids, $group->id);
+                }
+            }
+        }
+        foreach ($group_ids as $key => $group_id) {
+            $contacts = Contact::where('user_id', Auth::user()->id)
+                        ->where('group_ids', 'LIKE', '%'.$group_id.'%')
+                        ->where('status', 1)
+                        ->get();
+            foreach ($contacts as $key => $contact) {
+                if(!in_array($contact->phone_number, $receiver_arr)) {
+                    array_push($receiver_arr, $contact->phone_number);
+                }
+            }
+        }
+        
+        // Get Total Units
+        $count_receivers = count($receiver_arr);
         $units = ($textLength % 120) == 0 ? floor($textLength / 120) : floor($textLength / 120) + 1;
         $total_units = $units * $count_receivers;
         if ($total_units > Auth::user()->units->units) {
@@ -110,17 +145,17 @@ class MultiMessageController extends Controller
             ]);
         }
 
-        foreach ($receiver_phones as $key => $receiver_phone)
+        // Send Message to Each receiver phone
+        foreach ($receiver_arr as $key => $receiver_phone)
         {
             if ($send_now) {
                 $msg = Message::Create([
-                    "from" => $sender_phone, // Your Telnyx number //+15512094584 //+13017860317 //+14052672456
-                    "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
+                    "from" => $sender_phone,
+                    "to" =>   $receiver_phone,
                     "text" => $text,
                     'media_urls' => $imageUrls
                 ]);
             }
-            
             $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
                                 $query->where('sender_phone', '=', $receiver_phone)
                                         ->Where('receiver_phone', '=', $sender_phone);
@@ -131,7 +166,6 @@ class MultiMessageController extends Controller
                             })
                             ->orderBy('created_at', 'DESC')
                             ->first();
-
             $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
 
             $sender_query = User::where('phone', $sender_phone)->first();
