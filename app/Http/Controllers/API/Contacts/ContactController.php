@@ -92,6 +92,21 @@ class ContactController extends Controller
                 ]
             ]);
         } else {
+
+            $group_name = $request->group_name;
+            $group_id = "";
+            $query = Group::where('name', $group_name)->first();
+            if ($group_name != "") {
+                if (is_null($query)) {
+                    return response()->json([
+                        'status' => 404, // not found
+                        'message' => 'The group name is not right.',
+                    ]);
+                } else {
+                    $group_id = $query->id;
+                }
+            }
+            
             $this->validate(request(), [
                 'contact_file' => ['required',function ($attribute, $value, $fail) {
                     if (!in_array($value->getClientOriginalExtension(), ['csv'])) {
@@ -136,6 +151,7 @@ class ContactController extends Controller
                                 'last_name' => $last_name,
                                 'email' => $email,
                                 'note' => $note,
+                                'group_ids' => $group_id,
                             ]);
                         }
                     }
