@@ -93,18 +93,13 @@ class ContactController extends Controller
             ]);
         } else {
 
-            $group_name = $request->group_name;
-            $group_id = "";
-            $query = Group::where('name', $group_name)->first();
-            if ($group_name != "") {
-                if (is_null($query)) {
-                    return response()->json([
-                        'status' => 404, // not found
-                        'message' => 'The group name is not right.',
-                    ]);
-                } else {
-                    $group_id = $query->id;
-                }
+            $group_id = $request->group_id;
+            $query = Group::where('id', $group_id)->first();
+            if ($group_id != "" && is_null($query)) {
+                return response()->json([
+                    'status' => 404, // not found
+                    'message' => 'The selected group is not exist.',
+                ]);
             }
             
             $this->validate(request(), [
