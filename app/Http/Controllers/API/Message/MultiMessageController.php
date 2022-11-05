@@ -166,7 +166,8 @@ class MultiMessageController extends Controller
                             })
                             ->orderBy('created_at', 'DESC')
                             ->first();
-            $room_id = is_null($last_query)? Carbon::now()->timestamp : $last_query->room_id;
+            $new_room_id = (Carbon::now()->timestamp).(str_replace('+', '_', $receiver_phone));
+            $room_id = is_null($last_query)? $new_room_id : $last_query->room_id;
 
             $sender_query = User::where('phone', $sender_phone)->first();
             $sender_name = $sender_query? $sender_query->full_name : '';
