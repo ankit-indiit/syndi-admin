@@ -297,7 +297,13 @@ class MessageController extends Controller
                 $sender_name = $sender_query? $sender_query->full_name : '';
                 $sender_id = $sender_query? $sender_query->id : null;
                 $receiver_query1 = User::where('phone', $receiver_phone)->first();
-                $receiver_query2 = Contact::where('phone_number', $receiver_phone)->where('user_id', Auth::user()->id)->first();
+                $receiver_query2 = Contact::where('phone_number', $receiver_phone)
+                                        ->where(function ($query) {
+                                            if (Auth::check()) {
+                                                $query->where('user_id', Auth::user()->id);
+                                            }
+                                        })
+                                        ->first();
                 $receiver_name = is_null($receiver_query1)? is_null($receiver_query2)? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
                 
                 $saved_query = Msg::where('sender_phone', $sender_phone)
