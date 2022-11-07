@@ -293,8 +293,15 @@ class MessageController extends Controller
                 $new_room_id = (Carbon::now()->timestamp).(str_replace('+', '_', $receiver_phone));
                 $room_id = is_null($last_query)? $new_room_id : $last_query->room_id;
                 
-                $sender_query = User::where('phone', $sender_phone)->first();
-                $sender_name = $sender_query? $sender_query->full_name : '';
+                $sender_query1 = User::where('phone', $sender_phone)->first();
+                $sender_query2 = Contact::where('phone_number', $sender_phone)
+                                        ->where(function ($query) {
+                                            if (Auth::check()) {
+                                                $query->where('user_id', Auth::user()->id);
+                                            }
+                                        })
+                                        ->first();
+                $sender_name = is_null($sender_query1)? is_null($sender_query2)? '' : $sender_query2->first_name . ' ' . $sender_query2->last_name : $sender_query1->full_name;
                 $sender_id = $sender_query? $sender_query->id : null;
                 $receiver_query1 = User::where('phone', $receiver_phone)->first();
                 $receiver_query2 = Contact::where('phone_number', $receiver_phone)
