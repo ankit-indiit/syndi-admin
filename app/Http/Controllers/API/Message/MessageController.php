@@ -302,7 +302,7 @@ class MessageController extends Controller
                                         })
                                         ->first();
                 $sender_name = is_null($sender_query1)? is_null($sender_query2)? '' : $sender_query2->first_name . ' ' . $sender_query2->last_name : $sender_query1->full_name;
-                $sender_id = $sender_query? $sender_query->id : null;
+                $sender_id = $sender_query1? $sender_query1->id : null;
                 $receiver_query1 = User::where('phone', $receiver_phone)->first();
                 $receiver_query2 = Contact::where('phone_number', $receiver_phone)
                                         ->where(function ($query) {
