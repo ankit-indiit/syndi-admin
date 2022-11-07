@@ -330,8 +330,11 @@ class MessageController extends Controller
                 return response()->json($data);
     
             } catch (\Exception $e) {
-                $msgerror = Msgerror::create([
+                $req = Msgerror::create([
                     'error' => json_encode($request->all()),
+                ]);
+                $error = Msgerror::create([
+                    'error' => json_encode($e->getMessage()),
                 ]);
                 return response()->json($e->getMessage());
             }
