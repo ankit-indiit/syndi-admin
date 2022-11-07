@@ -412,6 +412,14 @@ class MessageController extends Controller
                 $sub_arr['sender_name'] = $sort_array[0]['sender_name'];
                 $sub_arr['receiver_phone'] = $sort_array[0]['receiver_phone'];
                 $sub_arr['receiver_name'] = $sort_array[0]['receiver_name'];
+
+                if ($sub_arr['receiver_phone'] == Auth::user()->phone) {
+                    $sub_arr['sender_phone'] = $sort_array[0]['receiver_phone'];
+                    $sub_arr['sender_name'] = $sort_array[0]['receiver_name'];
+                    $sub_arr['receiver_phone'] = $sort_array[0]['sender_phone'];
+                    $sub_arr['receiver_name'] = $sort_array[0]['sender_name'];
+                }
+
                 $sub_arr['message'] = $sort_array[0]['message'];
                 $sub_arr['created_at'] = $sort_array[0]['created_at'];
                 $sub_arr['read'] = $sort_array[0]['read'];
