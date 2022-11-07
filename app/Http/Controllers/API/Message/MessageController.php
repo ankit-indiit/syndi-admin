@@ -17,6 +17,8 @@ use App\Models\Msg;
 use App\Models\Msgerror;
 use App\Models\Img;
 use App\Models\Unit;
+use App\Models\Contact;
+use App\Models\Group;
 
 use Telnyx\Telnyx;
 use Telnyx\AvailablePhoneNumber;
@@ -126,8 +128,9 @@ class MessageController extends Controller
         $sender_query = User::where('phone', $sender_phone)->first();
         $sender_name = $sender_query? $sender_query->full_name : '';
         $sender_id = $sender_query? $sender_query->id : null;
-        $receiver_query = User::where('phone', $receiver_phone)->first();
-        $receiver_name = $receiver_query? $receiver_query->full_name : '';
+        $receiver_query1 = User::where('phone', $receiver_phone)->first();
+        $receiver_query2 = Contact::where('phone_number', $receiver_phone)->where('user_id', Auth::user()->id)->first();
+        $receiver_name = is_null($receiver_query1)? is_null($receiver_query2)? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
 
         $msg = Msg::create([
             'user_id' => $sender_id, // Sender ID
@@ -293,8 +296,9 @@ class MessageController extends Controller
                 $sender_query = User::where('phone', $sender_phone)->first();
                 $sender_name = $sender_query? $sender_query->full_name : '';
                 $sender_id = $sender_query? $sender_query->id : null;
-                $receiver_query = User::where('phone', $receiver_phone)->first();
-                $receiver_name = $receiver_query? $receiver_query->full_name : '';
+                $receiver_query1 = User::where('phone', $receiver_phone)->first();
+                $receiver_query2 = Contact::where('phone_number', $receiver_phone)->where('user_id', Auth::user()->id)->first();
+                $receiver_name = is_null($receiver_query1)? is_null($receiver_query2)? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
                 
                 $saved_query = Msg::where('sender_phone', $sender_phone)
                                     ->where('receiver_phone', $receiver_phone)
