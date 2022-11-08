@@ -65,7 +65,8 @@ class ChargeController extends Controller
         // ========== Payment Charge using PHP model ==========
         $client = new SquareClient([
             'accessToken' => env('SQUARE_TOKEN'),
-            'environment' => Environment::SANDBOX, // 'environment' => Environment::PRODUCTION,
+            // 'environment' => Environment::SANDBOX,
+            'environment' => Environment::PRODUCTION,
         ]);
         $amount_money = new Money();
         $amount_money->setAmount((int)($amount));
