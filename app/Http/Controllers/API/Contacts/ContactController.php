@@ -31,7 +31,11 @@ class ContactController extends Controller
                             ->get();
         $contacts = $this->getContacts($contacts_query);
 
-        $messages = Msg::all();
+        $user_phone = Auth::user()->phone;
+        $messages = Msg::where(function ($query) use ($user_phone) {
+            $query->where('sender_phone', '=', $user_phone)
+                    ->orWhere('receiver_phone', '=', $user_phone);
+        })->get();
         $connected_phones = $this->getConnectedPhones($messages);
         
         $data = array_merge($contacts, $connected_phones);
