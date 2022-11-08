@@ -38,7 +38,12 @@ class MultiMessageController extends Controller
      */
     public function index()
     {
-        $messages = Msg::all();
+        $user_phone = Auth::user()->phone;
+        $messages = Msg::where(function ($query) use ($user_phone) {
+            $query->where('sender_phone', '=', $user_phone)
+                    ->orWhere('receiver_phone', '=', $user_phone);
+        })->get();
+
         $phones = array();
         foreach ($messages as $key => $value)
         {
