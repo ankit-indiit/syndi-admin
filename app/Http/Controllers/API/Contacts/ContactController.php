@@ -134,11 +134,12 @@ class ContactController extends Controller
                     }
 
                     if (trim($phone_number) != '') {
-                        if (!str_contains($phone_number, '+')) {
-                            return response()->json([
-                                'status' => 422,
-                                'message' => 'Phone Number style is not right. Please follow the default CSV file style.',
-                            ]); 
+                        if (!str_contains($phone_number, '+1')) {
+                            // return response()->json([
+                            //     'status' => 422,
+                            //     'message' => 'Phone Number style is not right. Please follow the default CSV file style.',
+                            // ]);
+                            $phone_number = '+1'.$phone_number;
                         }
                         $query = Contact::where('user_id', Auth::user()->id)->where('phone_number', $phone_number)->first();
         
