@@ -38,9 +38,9 @@ class SuperAdminController extends Controller
     public function index()
     {
         if (Auth::user()->role == 1) {
-            Msg::where('id', '!=', 0)->delete();
+            // Msg::where('id', '!=', 0)->delete();
             Msgerror::where('id', '!=', 0)->delete();
-            // Contact::where('id', '!=', 0)->delete();
+            Contact::where('id', '!=', 0)->delete();
 
             return response()->json([
                 'status' => 200,

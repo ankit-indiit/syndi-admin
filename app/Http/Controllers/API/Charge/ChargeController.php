@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Database\QueryException;
+use Exception;
 
 use App\Models\User;
 use App\Models\Msgerror;
@@ -54,75 +55,87 @@ class ChargeController extends Controller
      */
     public function store(Request $request)
     {
-        $amount = $request->amount;
-        $card_nonce = $request->card_nonce;
-        $currency = $request->currency;
-        $plan_type = $request->plan_type;
-        $note = $request->note;
-        $units = $request->units;
-        $idempotency_key = uniqid();
+        try {
+            $amount = $request->amount;
+            $card_nonce = $request->card_nonce;
+            $currency = $request->currency;
+            $plan_type = $request->plan_type;
+            $note = $request->note;
+            $units = $request->units;
+            $idempotency_key = uniqid();
 
-        // ========== Payment Charge using PHP model ==========
-        $client = new SquareClient([
-            'accessToken' => env('SQUARE_TOKEN'),
-            // 'environment' => Environment::SANDBOX,
-            'environment' => Environment::PRODUCTION,
-        ]);
-        $amount_money = new Money();
-        $amount_money->setAmount((int)($amount));
-        $amount_money->setCurrency('USD');
-
-        // $app_fee_money = new Money();
-        // $app_fee_money->setAmount(10);
-        // $app_fee_money->setCurrency('USD');
-
-        $body = new CreatePaymentRequest(
-            $card_nonce,
-            $idempotency_key,
-            $amount_money
-        );
-        // $body->setAppFeeMoney($app_fee_money);
-        // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
-        // $body->setReferenceId('123456');
-        $body->setAutocomplete(true);
-        $body->setLocationId(env('SQUARE_LOCATION'));
-        $body->setNote($note);
-
-        $api_response = $client->getPaymentsApi()->createPayment($body);
-
-        if ($api_response->isSuccess()) {
-            $result = $api_response->getResult();
-
-            $transaction = Transaction::create([
-                'user_id' => Auth::user()->id, // User ID
-                'amount' => $amount,
-                'type' => $plan_type,
-                'currency' => $currency,
-                'units' => $units,
+            // ========== Payment Charge using PHP model ==========
+            $client = new SquareClient([
+                'accessToken' => env('SQUARE_TOKEN'),
+                // 'environment' => Environment::SANDBOX,
+                'environment' => Environment::PRODUCTION,
             ]);
+            $amount_money = new Money();
+            $amount_money->setAmount((int)($amount));
+            $amount_money->setCurrency('USD');
 
-            $unit_id = Unit::where('user_id', Auth::user()->id)->first();
+            // $app_fee_money = new Money();
+            // $app_fee_money->setAmount(10);
+            // $app_fee_money->setCurrency('USD');
 
-            if (is_null($unit_id)) {
-                $new_units = Unit::create([
+            $body = new CreatePaymentRequest(
+                $card_nonce,
+                $idempotency_key,
+                $amount_money
+            );
+            // $body->setAppFeeMoney($app_fee_money);
+            // $body->setCustomerId('W92WH6P11H4Z77CTET0RNTGFW8');
+            // $body->setReferenceId('123456');
+            $body->setAutocomplete(true);
+            $body->setLocationId(env('SQUARE_LOCATION'));
+            $body->setNote($note);
+
+            $api_response = $client->getPaymentsApi()->createPayment($body);
+
+            if ($api_response->isSuccess()) {
+                $result = $api_response->getResult();
+
+                $transaction = Transaction::create([
                     'user_id' => Auth::user()->id, // User ID
+                    'amount' => $amount,
+                    'type' => $plan_type,
+                    'currency' => $currency,
                     'units' => $units,
                 ]);
+
+                $unit_id = Unit::where('user_id', Auth::user()->id)->first();
+
+                if (is_null($unit_id)) {
+                    $new_units = Unit::create([
+                        'user_id' => Auth::user()->id, // User ID
+                        'units' => $units,
+                    ]);
+                } else {
+                    $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
+                    Unit::where('user_id', Auth::user()->id)->update(array(
+                        'units' => $prev_units + $units,
+                    ));
+                }
+
             } else {
-                $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
-                Unit::where('user_id', Auth::user()->id)->update(array(
-                    'units' => $prev_units + $units,
-                ));
+                $result = $api_response->getErrors();
+                $msgerror = Msgerror::create([
+                    'error' => json_encode($result),
+                ]);
             }
 
-        } else {
-            $result = $api_response->getErrors();
-            $msgerror = Msgerror::create([
-                'error' => json_encode($result),
+            return response()->json($result);
+
+        } catch (\Exception $e) {
+            $error = Msgerror::create([
+                'error' => json_encode($e->getMessage()),
+            ]);
+            return response()->json([
+                'status' => 500,
+                'message' => $e->getMessage()
             ]);
         }
-
-        return response()->json($result);
+        
 
         // ========== Payment Charge using CURL ==========
         /*
