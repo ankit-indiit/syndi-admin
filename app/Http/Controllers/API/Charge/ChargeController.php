@@ -71,7 +71,7 @@ class ChargeController extends Controller
                 'environment' => Environment::PRODUCTION,
             ]);
             $amount_money = new Money();
-            $amount_money->setAmount((int)($amount));
+            $amount_money->setAmount((int)($amount)*100);
             $amount_money->setCurrency('USD');
 
             // $app_fee_money = new Money();
