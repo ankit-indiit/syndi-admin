@@ -55,11 +55,6 @@ class ChargeController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json([
-            'status' => 500,
-            'message' => 'The "Square Payment Form" is deprecated, and will no longer be supported aside from critical bug fixes. Please use the Web Payments SDK to take payments.'
-        ]);
-
         try {
             $amount = $request->amount;
             $card_nonce = $request->card_nonce;
@@ -79,6 +74,11 @@ class ChargeController extends Controller
             $amount_money->setAmount((int)($amount)*100);
             $amount_money->setCurrency('USD');
 
+            return response()->json([
+                'status' => 500,
+                'message' => 'The "Square Payment Form" is deprecated, and will no longer be supported aside from critical bug fixes. Please use the Web Payments SDK to take payments.'
+            ]);
+            
             // $app_fee_money = new Money();
             // $app_fee_money->setAmount(10);
             // $app_fee_money->setCurrency('USD');
