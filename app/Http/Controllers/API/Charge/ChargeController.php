@@ -67,8 +67,8 @@ class ChargeController extends Controller
             // ========== Payment Charge using PHP model ==========
             $client = new SquareClient([
                 'accessToken' => env('SQUARE_TOKEN'),
-                // 'environment' => Environment::SANDBOX,
-                'environment' => Environment::PRODUCTION,
+                'environment' => Environment::SANDBOX,
+                // 'environment' => Environment::PRODUCTION,
             ]);
             $amount_money = new Money();
             $amount_money->setAmount((int)($amount)*100);
@@ -78,7 +78,7 @@ class ChargeController extends Controller
                 'status' => 500,
                 'message' => 'The "Square Payment Form" is deprecated, and will no longer be supported aside from critical bug fixes. Please use the Web Payments SDK to take payments.'
             ]);
-            
+
             // $app_fee_money = new Money();
             // $app_fee_money->setAmount(10);
             // $app_fee_money->setCurrency('USD');
