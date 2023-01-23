@@ -19,7 +19,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*', 'https://dev.syndicatesms.com'],
+    'allowed_origins' => ['*', 'https://syndicatesms.com'],
 
     'allowed_origins_patterns' => [],
 

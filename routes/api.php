@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\KeyWord\KeyWordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,12 +26,14 @@ Route::post('/numbers', [App\Http\Controllers\API\Auth\RegisterController::class
 Route::post('/login', [App\Http\Controllers\API\Auth\LoginController::class, 'store']);
 Route::resource('/reset-password', Auth\ResetController::class);
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware(['auth:api'])->group(function () {
     Route::get('/logout', [App\Http\Controllers\API\Auth\LoginController::class, 'destroy']);
     Route::get('/status', [App\Http\Controllers\API\Auth\LoginController::class, 'index']);
 
     // Dashboard
     Route::resource('dashboard', DashboardController::class);
+    Route::get('/notification',[App\Http\Controllers\API\Notification\NotificationController::class, 'unreadNotification']);
+    Route::get('/all-notification',[App\Http\Controllers\API\Notification\NotificationController::class, 'allNotification']);
 
     // Contact
     Route::resource('contact', Contacts\ContactController::class);
@@ -43,6 +46,8 @@ Route::middleware('auth:api')->group(function () {
     Route::resource('multi-msg', Message\MultiMessageController::class);
     Route::resource('img-url', Message\ImageUploadController::class);
     Route::resource('outbox', Message\OutboxController::class);
+    Route::post('/msg-report', [App\Http\Controllers\API\Message\MessageController::class, 'msgReport']);
+    Route::resource('key-word', KeyWord\KeyWordController::class);
     
     // Charge
     Route::resource('charge', Charge\ChargeController::class);

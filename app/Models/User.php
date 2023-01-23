@@ -18,7 +18,19 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'account_id', 'full_name', 'email', 'email_verified_at', 'company', 'group', 'phone', 'timezone', 'role','password', 'dpassword', 
+        'account_id',
+        'full_name',
+        'email',
+        'email_verified_at',
+        'company',
+        'group',
+        'phone',
+        'timezone',
+        'role',
+        'password',
+        'dpassword',
+        'image',
+        'status',
     ];
 
     /**
@@ -29,6 +41,31 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token', 'dpassword', 
     ];
+
+    protected $appends = ['status_badge'];
+
+    public function getImageAttribute()
+    {
+        if ($this->attributes['image'] == '') {
+            return asset("https://ui-avatars.com/api/?name=".@$this->attributes['full_name']."");
+        } else {
+            return asset('assets/admin/images/users').'/'.$this->attributes['image'];
+        }
+    }
+
+    public function getStatusBadgeAttribute()
+    {
+        if (isset($this->attributes['status'])) {
+            switch ($this->attributes['status']) {
+                case 0:
+                    return '<span class="badge badge-soft-danger">Inactive</span>';
+                break;
+                case 1:
+                    return '<span class="badge badge-soft-success">Active</span>';
+                break;           
+            }        
+        }
+    }
 
     public function msg() {
         return $this->hasMany(Msg::class);

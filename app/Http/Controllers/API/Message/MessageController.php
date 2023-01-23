@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Message;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -27,8 +28,9 @@ use Telnyx\PhoneNumber;
 use Telnyx\MessagingProfile;
 use Telnyx\Message;
 use Carbon\Carbon;
-
+use Carbon\CarbonPeriod;
 use App\Events\NewMessage;
+use App\Notifications\MessageNotification;
 
 class MessageController extends Controller
 {
@@ -84,9 +86,11 @@ class MessageController extends Controller
         $imageUrls = $request->imageUrls;
 
         $textLength = Str::length($text);
-        foreach ($imageUrls as $key => $url) {
-            $textLength += Str::length($url);
-        }
+        // if (count($imageUrls) > 0) {
+        //     foreach ($imageUrls as $key => $url) {
+        //         $textLength += Str::length($url);
+        //     }
+        // }
         if ($textLength == 0) {
             return response()->json([
                 'status' => 406,
@@ -109,7 +113,7 @@ class MessageController extends Controller
             "to" =>   $receiver_phone,  // Your Real number // +‪12183211745‬ //+12678719081
             "text" => $text,
             // 'subject' => 'Picture',
-            'media_urls' => $imageUrls
+            // 'media_urls' => ''
         ]);
 
         $last_query = Msg::where(function ($query) use ($receiver_phone, $sender_phone) {
@@ -130,7 +134,7 @@ class MessageController extends Controller
         $sender_id = $sender_query? $sender_query->id : null;
         $receiver_query1 = User::where('phone', $receiver_phone)->first();
         $receiver_query2 = Contact::where('phone_number', $receiver_phone)->where('user_id', Auth::user()->id)->first();
-        $receiver_name = is_null($receiver_query1)? is_null($receiver_query2)? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
+        $receiver_name = is_null($receiver_query1) ? is_null($receiver_query2) ? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
 
         $msg = Msg::create([
             'user_id' => $sender_id, // Sender ID
@@ -142,7 +146,7 @@ class MessageController extends Controller
             'message' => $text,
             'units' => $units,
         ]);
-
+        $receiver_query1->notify(new MessageNotification($msg));
         $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
         Unit::where('user_id', Auth::user()->id)->update(array(
             'units' => $prev_units - $units,
@@ -462,5 +466,38 @@ class MessageController extends Controller
             array_push($messages_array, $sub_arr);
         }
         return $messages_array;
+    }
+
+    public function msgReport(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'start_date' => 'required',
+            'end_date' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()->first(),
+            ]);
+        }
+        $messages = Msg::whereDate('created_at', '>=', $request->start_date)
+            ->whereDate('created_at', '<=', $request->end_date);
+        $period = CarbonPeriod::create($request->start_date, $request->end_date);
+        $days = [];
+        $dates = [];
+        foreach ($period as $date) {
+            $dates[] = $date->format('d M Y');
+            $days[] = Msg::whereDate('created_at', $date)->count();           
+        }
+        return response()->json([
+            'status' => $messages->count() > 0 ? true : false,
+            'count' => $messages->count(),
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'data' => [
+                'x' => $days,
+                'y' => $dates,
+            ],
+        ]);
     }
 }

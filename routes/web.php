@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers;
+use App\Http\Controllers\Admin\DashBoardController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -20,8 +21,22 @@ use App\Http\Controllers;
 
 
 // Localization
-Route::get('lang/{locale}', 'LocalizationController@lang');
+// Route::get('lang/{locale}', 'LocalizationController@lang');
 Route::get('/', 'AppController@index');
 
-
+Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
+	Route::get('/', 'Admin\DashBoardController@index')->name('dashboard');
+	Route::post('/update-profile', 'Admin\AdminController@update')->name('admin.update');
+	Route::post('/update-image', 'Admin\AdminController@image')->name('admin.image');	
+	Route::resource('user', Admin\UserController::class); 
+	Route::resource('group', Admin\GroupController::class); 
+	Route::resource('contact', Admin\ContactController::class); 
+	Route::resource('message', Admin\MessageController::class); 
+	Route::resource('keyword', Admin\KeywordController::class); 
+	Route::resource('report', Admin\ReportController::class); 
+	Route::resource('profile', Admin\ProfileController::class); 
+});
+Route::get('/login', 'Admin\AdminController@index')->name('login');
+Route::post('/login', 'Admin\AdminController@login')->name('admin.login');
+Route::post('/log-out', 'Admin\AdminController@logOut')->name('admin.logOut');
 

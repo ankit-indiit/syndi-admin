@@ -28,6 +28,7 @@ use Telnyx\Message;
 use Carbon\Carbon;
 
 use App\Events\NewMessage;
+use App\Notifications\MessageNotification;
 
 class MultiMessageController extends Controller
 {
@@ -97,9 +98,9 @@ class MultiMessageController extends Controller
 
         // Check message length
         $textLength = Str::length($text);
-        foreach ($imageUrls as $key => $url) {
-            $textLength += Str::length($url);
-        }
+        // foreach ($imageUrls as $key => $url) {
+        //     $textLength += Str::length($url);
+        // }
         if ($textLength == 0) {
             return response()->json([
                 'status' => 406,
@@ -179,7 +180,7 @@ class MultiMessageController extends Controller
             $sender_id = $sender_query? $sender_query->id : null;
             $receiver_query1 = User::where('phone', $receiver_phone)->first();
             $receiver_query2 = Contact::where('phone_number', $receiver_phone)->where('user_id', Auth::user()->id)->first();
-            $receiver_name = is_null($receiver_query1)? is_null($receiver_query2)? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
+            $receiver_name = is_null($receiver_query1) ? is_null($receiver_query2) ? '' : $receiver_query2->first_name . ' ' . $receiver_query2->last_name : $receiver_query1->full_name;
 
             $msg = Msg::create([
                 'user_id' => $sender_id, // Sender ID
@@ -191,7 +192,7 @@ class MultiMessageController extends Controller
                 'message' => $text,
                 'units' => $units,
                 'schedule_at' => $send_now? null: date('Y-m-d H:i:s', strtotime($schedule_at)),
-            ]);
+            ]);            
 
             $prev_units = Unit::where('user_id', Auth::user()->id)->first()->units;
             Unit::where('user_id', Auth::user()->id)->update(array(
@@ -210,6 +211,8 @@ class MultiMessageController extends Controller
                 ]);
             }
 
+            $receiver_query1->notify(new MessageNotification($msg));
+            
             // $event = NewMessage::dispatch($sender_phone, $text);
             $event = event(new NewMessage($sender_phone, $sender_name, $receiver_phone, $receiver_name, $text, $msg->created_at, $imageUrls));
             array_push($msg_arr, 
